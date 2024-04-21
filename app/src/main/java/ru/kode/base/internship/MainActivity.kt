@@ -23,6 +23,7 @@ import ru.kode.base.internship.di.AppComponentHolder
 import ru.kode.base.internship.di.ForegroundComponent
 import ru.kode.base.internship.routing.AppFlow
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import ru.kode.base.internship.ui.home.ProductsHomeScreen
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
