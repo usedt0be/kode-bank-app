@@ -1,7 +1,6 @@
 package ru.kode.base.internship
 
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -23,7 +22,6 @@ import ru.kode.base.internship.di.AppComponentHolder
 import ru.kode.base.internship.di.ForegroundComponent
 import ru.kode.base.internship.routing.AppFlow
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import ru.kode.base.internship.ui.home.ProductsHomeScreen
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
