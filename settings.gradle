@@ -16,3 +16,5 @@ include ':app',
   ':auth:ui',
   ':auth:data',
   ':auth:domain'
+include ':products'
+include ':products:ui'

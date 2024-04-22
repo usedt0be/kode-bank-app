@@ -173,3 +173,4 @@ private fun EnterPasswordErrorMessage.name(): String {
     EnterPasswordErrorMessage.LoginError -> stringResource(id = R.string.error_something_went_wrong_title)
   }
 }
+

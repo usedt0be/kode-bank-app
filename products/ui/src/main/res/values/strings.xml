@@ -1,0 +1,11 @@
+<resources>
+  <string name="app_name">ui</string>
+  <string name="main_description">Главная</string>
+  <string name="create_new_product">Открыть новый счет или продукт</string>
+  <string name="something_went_wrong">Упс, что-то пошло не так</string>
+  <string name="cant_load_content">Не удалось загрузить\nчасть контента</string>
+  <string name="update_data">Обновить</string>
+  <string name="deposits">Вклады</string>
+  <string name="accounts">Счета</string>
+  <string name="blocked">Заблокирована</string>
+</resources>

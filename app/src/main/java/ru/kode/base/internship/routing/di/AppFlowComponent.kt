@@ -12,6 +12,7 @@ import ru.kode.base.core.di.SingleIn
 import ru.kode.base.core.viewmodel.ViewModelKey
 import ru.kode.base.internship.routing.AppFlow
 import ru.kode.base.internship.routing.FlowEvent
+import ru.kode.base.internship.ui.home.ProductsHomeViewModel
 import ru.kode.base.internship.ui.identification.UserIdentificationViewModel
 import ru.kode.base.internship.ui.password.EnterPasswordViewModel
 
@@ -42,4 +43,10 @@ interface AppFlowUiModule {
   @IntoMap
   @ViewModelKey(EnterPasswordViewModel::class)
   fun bindEnterPasswordViewModel(model: EnterPasswordViewModel): BaseViewModel<*, *>
+
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(ProductsHomeViewModel::class)
+  fun bindProductHomeViewModel(model: ProductsHomeViewModel): BaseViewModel<*, *>
 }

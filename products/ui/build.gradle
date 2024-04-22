@@ -1,0 +1,18 @@
+plugins {
+  id "android-library-convention"
+  id "dagger-convention"
+  id "android-compose-convention"
+}
+
+android {
+  namespace 'ru.kode.base.internship.products.ui'
+}
+
+dependencies {
+  api project(":core:ui:uikit")
+
+  api project(':routing')
+
+  implementation libs.accompanist.swipe.refresh
+
+}
