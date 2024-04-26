@@ -73,8 +73,8 @@ fun getMocks(): List<BankAccountEntity> {
   )
 }
 
-object Mocks {
-  val deposits = listOf(
+fun getDepositMocks(): List<DepositsEntity> {
+  return listOf(
     DepositsEntity(
       depositId = "869393",
       description = if (Random.nextBoolean()) "Мой вклад" else "На пылесос",
@@ -100,6 +100,10 @@ object Mocks {
       cardExpiryDate = "04.08.2024"
     )
   )
+}
+
+object Mocks {
+
 
   val cards = listOf(
     CardEntity(

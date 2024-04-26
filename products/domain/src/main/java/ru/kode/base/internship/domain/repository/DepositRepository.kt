@@ -5,5 +5,7 @@ import ru.kode.base.internship.domain.entity.DepositsEntity
 
 interface DepositRepository {
   val depositsFlow: Flow<List<DepositsEntity>>
+
+  fun updateDepositMocks()
   suspend fun getDepositRate(id: String): Flow<String>
 }

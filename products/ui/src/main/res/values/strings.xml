@@ -6,6 +6,14 @@
   <string name="cant_load_content">Не удалось загрузить\nчасть контента</string>
   <string name="update_data">Обновить</string>
   <string name="deposits">Вклады</string>
-  <string name="accounts">Счета</string>
+  <string name="bankAccounts">Счета</string>
   <string name="blocked">Заблокирована</string>
+  <string name="currency_icon_description">Иконка валюты</string>
+  <string name="expand_icon_description">Иконка открытия списка карт</string>
+  <string name="card_icon_description">Иконка карты</string>
+  <string name="rate">Ставка</string>
+  <string name="card_expiry_date_prefix">До</string>
+
+
+
 </resources>

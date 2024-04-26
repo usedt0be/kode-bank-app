@@ -105,6 +105,7 @@ fun BankAccountItem(
 @Preview(showBackground = true)
 @Composable
 fun BankAccountItemPreview() {
+  val intents = ProductsHomeIntents()
   BankAccountItem(
     bankAccount = BankAccountEntity(
       status = Status.Active,

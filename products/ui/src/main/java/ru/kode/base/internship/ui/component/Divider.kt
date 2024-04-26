@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
-
 @Composable
 fun CustomDivider() {
-  Row(modifier = Modifier.fillMaxWidth()
-    .background(color = AppTheme.colors.backgroundSecondary)
+  Row(
+    modifier = Modifier.fillMaxWidth()
+      .background(color = AppTheme.colors.backgroundSecondary)
   ) {
     Divider(
       modifier = Modifier
@@ -24,5 +24,3 @@ fun CustomDivider() {
     )
   }
 }
-
-

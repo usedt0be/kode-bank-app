@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @ContributesBinding(AppScope::class)
 class BankAccountsRepositoryImpl @Inject constructor() : BankAccountRepository {
-  override fun updateMocks() {
+  override fun updateBankAccountMocks() {
     bankAccountMocks.update { getMocks() }
   }
 

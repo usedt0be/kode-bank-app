@@ -5,5 +5,5 @@ import ru.kode.base.internship.domain.entity.BankAccountEntity
 
 interface BankAccountRepository {
   val bankAccount: Flow<List<BankAccountEntity>>
-  fun updateMocks()
+  fun updateBankAccountMocks()
 }

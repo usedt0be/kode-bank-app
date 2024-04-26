@@ -34,7 +34,7 @@ class ProductsUseCase @Inject constructor(
     setState { copy(bankAccountsState = LceState.Loading) }
     delay(2000)
     return try {
-      bankAccountRepository.updateMocks()
+      bankAccountRepository.updateBankAccountMocks()
       val bankAccountFlow = bankAccountRepository.bankAccount
 
       if (Random.nextBoolean()) {
@@ -59,6 +59,7 @@ class ProductsUseCase @Inject constructor(
     delay(2000)
 
     return try {
+      depositsRepository.updateDepositMocks()
       val deposits = depositsRepository.depositsFlow
 
       if (Random.nextBoolean()) {
