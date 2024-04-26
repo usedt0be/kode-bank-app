@@ -12,25 +12,33 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.domain.entity.BankAccountEntity
+import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.entity.Currency
+import ru.kode.base.internship.domain.entity.PaymentSystem
+import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import ru.kode.base.internship.ui.home.BankAccount
-import ru.kode.base.internship.ui.home.Card
 import ru.kode.base.internship.ui.home.ProductsHomeIntents
 
-
 @Composable
-fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
-  val cards = bankAccount.cards
-  val cardListExpanded = remember { mutableStateOf(false) }
+fun BankAccountItem(
+  bankAccount: BankAccountEntity,
+  onClickExpand: (Boolean) -> Unit
+) {
+  var cardListExpanded by remember { mutableStateOf(false) }
+
   Column(modifier = Modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier
@@ -39,14 +47,13 @@ fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
         .background(color = AppTheme.colors.backgroundSecondary),
       verticalAlignment = Alignment.CenterVertically
     ) {
-
       Icon(
-        painter = when(bankAccount.currency) {
-          "RUB" -> painterResource(id = R.drawable.ic_rub)
-          "USD" -> painterResource(id = R.drawable.ic_usd)
+        painter = when (bankAccount.currency) {
+          Currency.RUB -> painterResource(id = R.drawable.ic_rub)
+          Currency.USD -> painterResource(id = R.drawable.ic_usd)
           else -> painterResource(id = R.drawable.ic_eur)
         },
-        contentDescription ="Russian ruble icon",
+        contentDescription = stringResource(id = R.string.currency_icon_description, "currencyIcon"),
         modifier = Modifier.padding(start = 16.dp),
         tint = Color.Unspecified
       )
@@ -71,54 +78,64 @@ fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
 
       IconButton(
         onClick = {
-          cardListExpanded.value = !cardListExpanded.value
+          cardListExpanded = !cardListExpanded
+          onClickExpand(cardListExpanded)
         },
-       modifier = Modifier.padding(end = 16.dp),
+        modifier = Modifier.padding(end = 16.dp),
       ) {
         Icon(
-          if(cardListExpanded.value) painterResource(id = R.drawable.expand_button_expanded)
-          else painterResource(id = R.drawable.expand_button_unexpanded),
-          contentDescription = "Expand Button",
+          if (cardListExpanded)
+            painterResource(id = R.drawable.expand_button_expanded)
+          else
+            painterResource(id = R.drawable.expand_button_unexpanded),
+          contentDescription = stringResource(id = R.string.expand_icon_description, "expandButton"),
           tint = Color.Unspecified
         )
       }
     }
 
-    if(cardListExpanded.value) {
-      for (card in cards) {
-        CardItem(card = card, onClickCheckCard = {intents.checkCard()})
+    if (cardListExpanded) {
+      for (card in bankAccount.cards) {
+        CardItem(card = card, onClickCheckCard = {})
       }
     }
   }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun BankAccountItemPreview() {
-  val intents = ProductsHomeIntents()
   BankAccountItem(
-    bankAccount = BankAccount(
+    bankAccount = BankAccountEntity(
+      status = Status.Active,
+      number = "4141",
       description = "Счет расчетный",
       accountBalance = "457334.00",
-      currency = "RUB",
+      currency = Currency.RUB,
       accountId = "421",
       cards = listOf(
-        Card(
-          description = "Карта зарплатная",
+        CardEntity(
+          cardId = CardEntity.Id("41"),
+          accountId = "58",
+          name = "Карта зарплатная",
           type = "Физическая",
           number = "4124 4144 5135 5131",
-          paymentSystem = "MasterCard",
-          isBlocked = false
+          paymentSystem = PaymentSystem.MasterCard,
+          status = Status.Active,
+          expireAt = "12.02.2028"
         ),
-        Card(
-          description = "Дополнительная карта",
+        CardEntity(
+          cardId = CardEntity.Id("48"),
+          accountId = "58",
+          name = "Карта зарплатная",
           type = "Физическая",
           number = "4124 4144 5135 5511",
-          paymentSystem = "Visa",
-          isBlocked = true
+          paymentSystem = PaymentSystem.Visa,
+          status = Status.Active,
+          expireAt = "12.02.2028"
         )
       ),
-    ), intents
+    ),
+    onClickExpand = {},
   )
 }
