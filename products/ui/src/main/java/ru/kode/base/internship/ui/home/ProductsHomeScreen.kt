@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -35,7 +35,6 @@ import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.component.BankAccountItem
 import ru.kode.base.internship.ui.component.CreateNewProductButton
-import ru.kode.base.internship.ui.component.CustomDivider
 import ru.kode.base.internship.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -80,7 +79,7 @@ fun ProductsHomeScreen(
             modifier = Modifier.padding(start = 16.dp, top = 47.dp, end = 16.dp)
           ) {
             Text(
-              text = stringResource(id = R.string.main_description, "Main"),
+              text = stringResource(id = R.string.main_description, ),
               style = AppTheme.typography.title,
             )
           }
@@ -97,7 +96,7 @@ fun ProductsHomeScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
-                text = stringResource(id = R.string.bankAccounts, "bankAccounts"),
+                text = stringResource(id = R.string.bankAccounts, ),
                 modifier = Modifier
                   .fillMaxWidth()
                   .padding(start = 16.dp),
@@ -112,7 +111,8 @@ fun ProductsHomeScreen(
           ) { index, bankAccount ->
             BankAccountItem(
               bankAccount = bankAccount,
-              onClickExpand = { cardListExpanded ->
+              intents = intents,
+              onClickExpand = {cardListExpanded ->
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {
@@ -120,7 +120,11 @@ fun ProductsHomeScreen(
                 }
               }
             )
-            if (index != bankAccounts.lastIndex) CustomDivider()
+            if (index != bankAccounts.lastIndex) Divider(
+              color = AppTheme.colors.contendSecondary,
+              modifier = Modifier.background(AppTheme.colors.backgroundPrimary)
+                .padding(start = 40.dp, end = 16.dp)
+            )
           }
         }
 
@@ -156,7 +160,11 @@ fun ProductsHomeScreen(
           }
           itemsIndexed(items = deposits) { index: Int, deposit ->
             DepositItem(deposit = deposit, onClickCheckDeposit = { intents.checkDeposit() })
-            if (index != deposits.lastIndex) CustomDivider()
+            if (index != deposits.lastIndex) Divider(
+              color = AppTheme.colors.contendSecondary,
+              modifier = Modifier.background(AppTheme.colors.backgroundPrimary)
+                .padding(start = 40.dp, end = 16.dp)
+            )
           }
         }
 
@@ -190,3 +198,4 @@ fun ProductsHomeScreen(
     }
   }
 }
+

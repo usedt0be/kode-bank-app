@@ -5,9 +5,10 @@ sealed class FlowEvent {
   data object LoginRequested : FlowEvent()
   data object EnterPasswordDismissed : FlowEvent()
   data object UserLoggedIn : FlowEvent()
-  data object CreateNewProduct: FlowEvent()
+  data object CreateNewProduct : FlowEvent()
+  data object CheckDeposit : FlowEvent()
 
-  data object CheckCard: FlowEvent()
+  data object BackToHomeScreen: FlowEvent()
 
-  data object CheckDeposit: FlowEvent()
+  data object GetCardDetails : FlowEvent()
 }

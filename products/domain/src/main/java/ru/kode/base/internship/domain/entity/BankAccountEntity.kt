@@ -1,5 +1,8 @@
 package ru.kode.base.internship.domain.entity
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class BankAccountEntity(
   val description: String,
   val accountId: String,

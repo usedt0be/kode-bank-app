@@ -13,14 +13,14 @@ import javax.inject.Inject
 @ContributesBinding(AppScope::class)
 class DepositsRepositoryImpl @Inject constructor() : DepositRepository {
 
-  override fun updateDepositMocks() {
-    deposits.update { getDepositMocks() }
-  }
-
   private var deposits = MutableStateFlow<List<DepositsEntity>>(emptyList())
 
   override val depositsFlow: Flow<List<DepositsEntity>>
     get() = deposits
+
+  override fun fetchDeposits() {
+    deposits.update { getDepositMocks() }
+  }
 
   override suspend fun getDepositRate(id: String): Flow<String> {
     deposits.value.find { it.depositId == id }.let {

@@ -6,4 +6,7 @@ sealed class ScreenRoute(val path: String) {
   data object FeatureInProgress : ScreenRoute(path = "feature-in-progress")
 
   data object ProductsHome : ScreenRoute(path = "products-home")
+
+  data object CardDetails: ScreenRoute(path = "card-details")
+
 }

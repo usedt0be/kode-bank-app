@@ -35,7 +35,8 @@ import ru.kode.base.internship.ui.home.ProductsHomeIntents
 @Composable
 fun BankAccountItem(
   bankAccount: BankAccountEntity,
-  onClickExpand: (Boolean) -> Unit
+  onClickExpand: (Boolean) -> Unit,
+  intents: ProductsHomeIntents,
 ) {
   var cardListExpanded by remember { mutableStateOf(false) }
 
@@ -53,7 +54,7 @@ fun BankAccountItem(
           Currency.USD -> painterResource(id = R.drawable.ic_usd)
           else -> painterResource(id = R.drawable.ic_eur)
         },
-        contentDescription = stringResource(id = R.string.currency_icon_description, "currencyIcon"),
+        contentDescription = stringResource(id = R.string.currency_icon_description,),
         modifier = Modifier.padding(start = 16.dp),
         tint = Color.Unspecified
       )
@@ -88,7 +89,7 @@ fun BankAccountItem(
             painterResource(id = R.drawable.expand_button_expanded)
           else
             painterResource(id = R.drawable.expand_button_unexpanded),
-          contentDescription = stringResource(id = R.string.expand_icon_description, "expandButton"),
+          contentDescription = stringResource(id = R.string.expand_icon_description, ),
           tint = Color.Unspecified
         )
       }
@@ -96,7 +97,7 @@ fun BankAccountItem(
 
     if (cardListExpanded) {
       for (card in bankAccount.cards) {
-        CardItem(card = card, onClickCheckCard = {})
+        CardListItem(card = card, onClickGetCard = { intents.getCardDetails(card.cardId.value) })
       }
     }
   }
@@ -106,37 +107,39 @@ fun BankAccountItem(
 @Composable
 fun BankAccountItemPreview() {
   val intents = ProductsHomeIntents()
-  BankAccountItem(
-    bankAccount = BankAccountEntity(
-      status = Status.Active,
-      number = "4141",
-      description = "Счет расчетный",
-      accountBalance = "457334.00",
-      currency = Currency.RUB,
-      accountId = "421",
-      cards = listOf(
-        CardEntity(
-          cardId = CardEntity.Id("41"),
-          accountId = "58",
-          name = "Карта зарплатная",
-          type = "Физическая",
-          number = "4124 4144 5135 5131",
-          paymentSystem = PaymentSystem.MasterCard,
-          status = Status.Active,
-          expireAt = "12.02.2028"
+
+     BankAccountItem(
+      bankAccount = BankAccountEntity(
+        status = Status.Active,
+        number = "4141",
+        description = "Счет расчетный",
+        accountBalance = "457334.00",
+        currency = Currency.RUB,
+        accountId = "421",
+        cards = listOf(
+          CardEntity(
+            cardId = CardEntity.Id("41"),
+            accountId = "58",
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5131",
+            paymentSystem = PaymentSystem.MasterCard,
+            status = Status.Active,
+            expireAt = "12.02.2028"
+          ),
+          CardEntity(
+            cardId = CardEntity.Id("48"),
+            accountId = "58",
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5511",
+            paymentSystem = PaymentSystem.Visa,
+            status = Status.Active,
+            expireAt = "12.02.2028"
+          )
         ),
-        CardEntity(
-          cardId = CardEntity.Id("48"),
-          accountId = "58",
-          name = "Карта зарплатная",
-          type = "Физическая",
-          number = "4124 4144 5135 5511",
-          paymentSystem = PaymentSystem.Visa,
-          status = Status.Active,
-          expireAt = "12.02.2028"
-        )
       ),
-    ),
-    onClickExpand = {},
-  )
+    onClickExpand = {} ,
+    intents = intents )
+
 }

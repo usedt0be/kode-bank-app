@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
-import ru.kode.base.internship.domain.ProductsUseCase
+import ru.kode.base.internship.domain.usecase.ProductsUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
 @Stable
@@ -26,7 +26,16 @@ class ProductsHomeViewModel @Inject constructor(
     }
 
     onEach(intent(ProductsHomeIntents::loadData)) {
-      action { _, _, _ -> productsUseCase.fetchBankAccounts() }
+      action { _, _, _ ->
+        productsUseCase.fetchBankAccounts()
+      }
+    }
+
+    onEach(intent(ProductsHomeIntents::getCardDetails)) {
+      action { _, _, cardId ->
+        flowEvents.tryEmit(FlowEvent.GetCardDetails)
+        productsUseCase.fetchCardDetails(cardId)
+      }
     }
 
     onEach(productsUseCase.bankAccountsState) {
@@ -87,11 +96,6 @@ class ProductsHomeViewModel @Inject constructor(
       }
     }
 
-    onEach(intent(ProductsHomeIntents::checkCard)) {
-      action { _, _, _ ->
-        flowEvents.tryEmit(FlowEvent.CreateNewProduct)
-      }
-    }
 
     onEach(intent(ProductsHomeIntents::checkDeposit)) {
       action { _, _, _ ->

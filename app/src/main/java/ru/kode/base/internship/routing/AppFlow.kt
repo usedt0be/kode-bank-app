@@ -11,6 +11,7 @@ import ru.kode.base.core.routing.utils.animatedComposable
 import ru.kode.base.core.viewmodel.ViewModelProviders
 import ru.kode.base.core.viewmodel.ViewModelStore
 import ru.kode.base.internship.routing.di.AppFlowScope
+import ru.kode.base.internship.ui.details.CardDetailsScreen
 import ru.kode.base.internship.ui.featureinprogress.FeatureInProgressScreen
 import ru.kode.base.internship.ui.home.ProductsHomeScreen
 import ru.kode.base.internship.ui.identification.UserIdentificationScreen
@@ -26,7 +27,8 @@ object AppFlow : GraphFlow() {
     viewModelStore: ViewModelStore,
   ) : BaseFlowCoordinator<FlowEvent, Unit>(providers, flowEvents, viewModelStore) {
     override suspend fun onFlowStart() {
-      navController.navigate(ScreenRoute.UserIdentification.route)
+//      navController.navigate(ScreenRoute.UserIdentification.route)
+      navController.navigate(ScreenRoute.ProductsHome.route)
     }
 
     override suspend fun handleEvent(event: FlowEvent) {
@@ -36,9 +38,13 @@ object AppFlow : GraphFlow() {
         FlowEvent.LoginRequested -> navController.navigate(ScreenRoute.EnterPassword.route)
 
         FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.ProductsHome.route)
+
         FlowEvent.CreateNewProduct -> navController.navigate(ScreenRoute.FeatureInProgress.route)
-        FlowEvent.CheckCard -> navController.navigate(ScreenRoute.FeatureInProgress.route)
         FlowEvent.CheckDeposit -> navController.navigate(ScreenRoute.FeatureInProgress.route)
+
+        FlowEvent.GetCardDetails -> navController.navigate(ScreenRoute.CardDetails.route)
+
+        FlowEvent.BackToHomeScreen ->navController.navigate(ScreenRoute.ProductsHome.route)
       }
     }
   }
@@ -57,6 +63,10 @@ object AppFlow : GraphFlow() {
     }
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
+    }
+    animatedComposable(ScreenRoute.CardDetails.route, ScreenTransitionAnimation.Horizontal) {
+      CardDetailsScreen()
+
     }
   }
 
