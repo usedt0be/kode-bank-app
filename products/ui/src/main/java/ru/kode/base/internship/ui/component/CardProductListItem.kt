@@ -27,14 +27,14 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun CardListItem(card: CardEntity, onClickGetCard:() -> Unit) {
+fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> Unit) {
 
   Row(
     modifier = Modifier
       .height(72.dp)
       .fillMaxWidth()
       .clickable {
-        onClickGetCard()
+        onClickDetailsCard(card.cardId)
       }
       .background(color = AppTheme.colors.backgroundSecondary),
     verticalAlignment = Alignment.CenterVertically
@@ -88,7 +88,7 @@ fun CardListItem(card: CardEntity, onClickGetCard:() -> Unit) {
 @Preview
 @Composable
 fun CardListItemPreview() {
-  CardListItem(
+  CardProductListItem(
     card = CardEntity(
       cardId = CardEntity.Id("41"),
       name = "Тинькофф платинум)))",
@@ -99,6 +99,6 @@ fun CardListItemPreview() {
       expireAt = "02.04.2025",
       accountId = "15135"
     ),
-    onClickGetCard = {}
+    onClickDetailsCard = {}
   )
 }

@@ -8,6 +8,7 @@ import ru.kode.base.core.di.AppScope
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.internship.core.domain.BaseUseCase
 import ru.kode.base.internship.core.domain.entity.LceState
+import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.repository.BankAccountRepository
 import ru.kode.base.internship.domain.repository.CardRepository
 import ru.kode.base.internship.domain.repository.DepositRepository
@@ -24,7 +25,9 @@ class ProductsUseCase @Inject constructor(
     val bankAccountsState: LceState = LceState.None,
     val depositsState: LceState = LceState.None,
     val cardsState: LceState = LceState.None,
+    val bankAccountBalanceState: LceState = LceState.None,
   )
+
 
   suspend fun fetchBankAccounts()  {
     setState { copy(bankAccountsState = LceState.Loading) }
@@ -50,7 +53,6 @@ class ProductsUseCase @Inject constructor(
   suspend fun fetchDeposits()  {
     setState { copy(depositsState = LceState.Loading) }
     delay(2000)
-
     try {
       depositsRepository.fetchDeposits()
       if (Random.nextBoolean()) {
@@ -58,7 +60,6 @@ class ProductsUseCase @Inject constructor(
       } else {
         setState { copy(depositsState = LceState.Error("Failed to load deposits")) }
       }
-
     } catch (e: Exception) {
       setState { copy(depositsState = LceState.Error("Failed to load deposits")) }
       throw e
@@ -73,13 +74,21 @@ class ProductsUseCase @Inject constructor(
 
   suspend fun fetchCardDetails(cardId: String) {
     setState { copy(cardsState = LceState.Loading) }
+    setState { copy(bankAccountsState = LceState.Loading)}
     try {
-      cardRepository.cardDetails(cardId)
+      cardRepository.fetchCardDetails(cardId)
+      cardRepository.fetchBankAccountBalance()
       setState { copy(cardsState = LceState.Content) }
+      setState { copy(bankAccountsState = LceState.Content) }
     } catch (e: Exception) {
-      setState { copy(cardsState = LceState.Error("Failed to load deposits")) }
+      setState { copy(bankAccountsState = LceState.Error("Failed to load bankAccount")) }
+      setState { copy(cardsState = LceState.Error("Failed to load cards")) }
       throw e
     }
+  }
+
+  fun renameCard(cardId: CardEntity.Id, newName:String) {
+      cardRepository.renameCard(cardId, newName)
   }
 
   val card = cardRepository.card
@@ -88,6 +97,12 @@ class ProductsUseCase @Inject constructor(
     it.cardsState
   }.distinctUntilChanged()
 
+
+  val bankAccountBalance = cardRepository.bankAccountBalance
+
+  val bankAccountBalanceState: Flow<LceState> = stateFlow.map {
+    it.cardsState
+  }.distinctUntilChanged()
 
   suspend fun fetchDepositRates(depositId: String): Flow<String> {
     setState { copy(bankAccountsState = LceState.Loading) }
@@ -99,4 +114,5 @@ class ProductsUseCase @Inject constructor(
       throw e
     }
   }
+
 }

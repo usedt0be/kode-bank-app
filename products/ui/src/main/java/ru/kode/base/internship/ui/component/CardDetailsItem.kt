@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.kode.base.internship.domain.entity.CardEntity
@@ -32,15 +33,13 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CardItem(card: CardEntity, onClickDetails:(Boolean)-> Unit) {
-
-
+fun CardDetailsItem(card: CardEntity, balance: String) {
 
   Card(
     modifier = Modifier
       .size(height = 160.dp, width = 272.dp)
-      .clickable { onClickDetails(true) }
-      .shadow(8.dp),
+      .clickable {}
+      .shadow(24.dp),
     shape = RoundedCornerShape(12.dp),
     backgroundColor = AppTheme.colors.backgroundSecondary
 
@@ -54,13 +53,12 @@ fun CardItem(card: CardEntity, onClickDetails:(Boolean)-> Unit) {
       modifier = Modifier
         .fillMaxSize()
         .padding(start = 16.dp, end = 16.dp),
-      verticalArrangement = Arrangement.Center
+      verticalArrangement = Arrangement.SpaceAround
     )
     {
 
       Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 24.dp)
+        verticalAlignment = Alignment.CenterVertically
       ) {
         Icon(
           painter = when (card.paymentSystem) {
@@ -81,27 +79,36 @@ fun CardItem(card: CardEntity, onClickDetails:(Boolean)-> Unit) {
         Spacer(modifier = Modifier.weight(1f))
 
         Icon(
-          painter = painterResource(id = R.drawable.ic_nfc), contentDescription = "Nfc icon"
+          painter = painterResource(id = R.drawable.ic_nfc),
+          contentDescription = stringResource(R.string.nfc_icon),
+          tint = AppTheme.colors.contendAccentTertiary
         )
       }
 
       if (card.status == Status.Blocked) {
         Text(
-          text = "Заблокирована",
+          text = stringResource(id = R.string.blocked),
           style = AppTheme.typography.bodyMedium,
           color = AppTheme.colors.indicatorContendError
         )
-      } else { Spacer(modifier = Modifier.weight(1f)) }
+      } else {
+        Text(
+          text = balance,
+          style = AppTheme.typography.bodyMedium,
+          color = AppTheme.colors.textPrimary
+        )
+      }
 
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(bottom = 24.dp)
+
       ) {
 
         Text(
           text = maskCardNumber(card.number),
           modifier = Modifier.alignByBaseline(),
           style = AppTheme.typography.caption1,
+          color = AppTheme.colors.textSecondary
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -118,8 +125,7 @@ fun CardItem(card: CardEntity, onClickDetails:(Boolean)-> Unit) {
 }
 
 fun parseDate(input: String): String {
-  val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val date = LocalDate.parse(input, dateFormatter)
+  val date = LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
   val formatter = DateTimeFormatter.ofPattern("MM/dd")
   return date.format(formatter)
 }
@@ -133,7 +139,8 @@ fun maskCardNumber(input: String): String {
 @Preview
 @Composable
 fun CardItemPreview() {
-  CardItem(
+  CardDetailsItem(
+    balance = "102",
     card = CardEntity(
       cardId = CardEntity.Id("41"),
       name = "Тинькофф платинум)))",
@@ -144,6 +151,5 @@ fun CardItemPreview() {
       expireAt = "02.04.2025",
       accountId = "15135"
     ),
-    onClickDetails = {}
   )
 }

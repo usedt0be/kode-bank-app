@@ -24,9 +24,9 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
 
-fun CardActionRow(detailsButtonIsActive:() -> Boolean) {
+fun CardDetailsActionRow() {
   var operationButtonIsActive by remember { mutableStateOf(false) }
-  var infoButtonIsActive by remember { mutableStateOf(detailsButtonIsActive()) }
+  var infoButtonIsActive by remember { mutableStateOf(true) }
   var paymentsButtonIsActive by remember { mutableStateOf(false) }
 
   Row(
@@ -135,7 +135,7 @@ fun CardActionRow(detailsButtonIsActive:() -> Boolean) {
 
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun CardActionRowPreview() {
-  CardActionRow(detailsButtonIsActive = {true})
+  CardDetailsActionRow()
 }

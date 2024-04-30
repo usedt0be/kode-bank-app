@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 data class CardEntity(
   val cardId: Id,
   val accountId: String,
-  val name: String,
+  var name: String,
   val number: String,
   val expireAt: String,
   val paymentSystem: PaymentSystem,

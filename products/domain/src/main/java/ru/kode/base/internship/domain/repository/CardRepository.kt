@@ -5,6 +5,12 @@ import ru.kode.base.internship.domain.entity.CardEntity
 
 interface CardRepository {
   val card: Flow<CardEntity>
-  suspend fun cardDetails(id: String)
+  suspend fun fetchCardDetails(id: String)
+
+  fun fetchBankAccountBalance()
+
+  val bankAccountBalance: Flow<String>
+
+  fun renameCard(cardId: CardEntity.Id,newName:String)
 
 }

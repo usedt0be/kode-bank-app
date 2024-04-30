@@ -10,6 +10,7 @@ import ru.kode.base.core.BaseViewModel
 import ru.kode.base.internship.domain.usecase.ProductsUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
+
 @Stable
 class ProductsHomeViewModel @Inject constructor(
   private val flowEvents: MutableSharedFlow<FlowEvent>,
@@ -18,23 +19,14 @@ class ProductsHomeViewModel @Inject constructor(
   override fun buildMachine(): Machine<ProductsHomeViewState> = machine {
     initial = ProductsHomeViewState() to {
       executeAsync {
-        productsUseCase.fetchBankAccounts()
-      }
-      executeAsync {
         productsUseCase.fetchDeposits()
-      }
-    }
-
-    onEach(intent(ProductsHomeIntents::loadData)) {
-      action { _, _, _ ->
         productsUseCase.fetchBankAccounts()
       }
     }
 
     onEach(intent(ProductsHomeIntents::getCardDetails)) {
       action { _, _, cardId ->
-        flowEvents.tryEmit(FlowEvent.GetCardDetails)
-        productsUseCase.fetchCardDetails(cardId)
+        flowEvents.tryEmit(FlowEvent.GetCardDetails(cardId))
       }
     }
 
@@ -48,7 +40,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(productsUseCase.bankAccounts) {
       transitionTo { state, bankAccountsData ->
-
         state.copy(
           bankAccountsData = bankAccountsData
         )
@@ -87,11 +78,13 @@ class ProductsHomeViewModel @Inject constructor(
       }
     }
 
-    onEach(intent(ProductsHomeIntents::refreshData)) {
+    onEach(intent(ProductsHomeIntents::refresh)) {
       action { _, _, _ ->
         viewModelScope.launch(Dispatchers.IO) {
-          executeAsync { productsUseCase.fetchBankAccounts() }
-          executeAsync { productsUseCase.fetchDeposits() }
+          executeAsync {
+            productsUseCase.fetchBankAccounts()
+            productsUseCase.fetchDeposits()
+          }
         }
       }
     }

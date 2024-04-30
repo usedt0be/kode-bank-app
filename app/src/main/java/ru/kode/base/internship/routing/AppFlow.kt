@@ -42,9 +42,9 @@ object AppFlow : GraphFlow() {
         FlowEvent.CreateNewProduct -> navController.navigate(ScreenRoute.FeatureInProgress.route)
         FlowEvent.CheckDeposit -> navController.navigate(ScreenRoute.FeatureInProgress.route)
 
-        FlowEvent.GetCardDetails -> navController.navigate(ScreenRoute.CardDetails.route)
-
         FlowEvent.BackToHomeScreen ->navController.navigate(ScreenRoute.ProductsHome.route)
+
+        is FlowEvent.GetCardDetails -> navController.navigate(ScreenRoute.CardDetails.route + "/${event.cardId.value}")
       }
     }
   }
@@ -64,9 +64,11 @@ object AppFlow : GraphFlow() {
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
     }
-    animatedComposable(ScreenRoute.CardDetails.route, ScreenTransitionAnimation.Horizontal) {
-      CardDetailsScreen()
-
+    animatedComposable(ScreenRoute.CardDetails.route + "/{cardId}", ScreenTransitionAnimation.Horizontal) {
+      backStackEntry ->
+      CardDetailsScreen(
+        cardId = backStackEntry.arguments?.getString("cardId")
+      )
     }
   }
 

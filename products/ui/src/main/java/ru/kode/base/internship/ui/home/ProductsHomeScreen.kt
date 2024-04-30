@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.component.BankAccountItem
 import ru.kode.base.internship.ui.component.CreateNewProductButton
+import ru.kode.base.internship.ui.component.CustomDivider
 import ru.kode.base.internship.ui.component.DepositItem
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -54,13 +56,15 @@ fun ProductsHomeScreen(
 
   val pullRefreshState = rememberPullRefreshState(
     refreshing = false,
-    onRefresh = { intents.refreshData() }
+    onRefresh = { intents.refresh() }
   )
+
   var createButtonIsVisible by remember { mutableStateOf(false) }
 
   if (state.bankAccountsState is LceState.Content && state.depositsState is LceState.Content) {
     createButtonIsVisible = true
   }
+
 
   if (state.bankAccountsState == LceState.Loading || state.depositsState == LceState.Loading) {
     ShimmerEffect()
@@ -111,27 +115,25 @@ fun ProductsHomeScreen(
           ) { index, bankAccount ->
             BankAccountItem(
               bankAccount = bankAccount,
-              intents = intents,
               onClickExpand = {cardListExpanded ->
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {
                   intents.hideCards(bankAccount)
                 }
-              }
+              },
+              onClickGetDetails = intents.getCardDetails
             )
-            if (index != bankAccounts.lastIndex) Divider(
-              color = AppTheme.colors.contendSecondary,
-              modifier = Modifier.background(AppTheme.colors.backgroundPrimary)
-                .padding(start = 40.dp, end = 16.dp)
-            )
+            if (index != bankAccounts.lastIndex)  {
+              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+            }
           }
         }
 
         if (state.bankAccountsState == LceState.Error("Failed to load accounts")) {
           createButtonIsVisible = false
           item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refreshData() })
+            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
           }
         } else {
           bankAccountsSection()
@@ -160,18 +162,16 @@ fun ProductsHomeScreen(
           }
           itemsIndexed(items = deposits) { index: Int, deposit ->
             DepositItem(deposit = deposit, onClickCheckDeposit = { intents.checkDeposit() })
-            if (index != deposits.lastIndex) Divider(
-              color = AppTheme.colors.contendSecondary,
-              modifier = Modifier.background(AppTheme.colors.backgroundPrimary)
-                .padding(start = 40.dp, end = 16.dp)
-            )
+            if (index != deposits.lastIndex) {
+              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+            }
           }
         }
 
         if (state.depositsState == LceState.Error("Failed to load deposits")) {
           createButtonIsVisible = false
           item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refreshData() })
+            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
           }
         } else {
           depositSection()
@@ -180,6 +180,8 @@ fun ProductsHomeScreen(
         item {
           Spacer(modifier = Modifier.height(16.dp))
         }
+
+        Log.d("bank_BTN_state_2", "$createButtonIsVisible")
 
         if (createButtonIsVisible) {
           item {

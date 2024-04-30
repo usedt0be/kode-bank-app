@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -18,7 +19,8 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 @Composable
 fun CustomTopAppBar(onClickNavigateOnBack:() -> Unit) {
   Box(
-    modifier = Modifier.fillMaxWidth()
+    modifier = Modifier
+      .fillMaxWidth()
       .background(color = AppTheme.colors.backgroundSecondary)
       .heightIn(32.dp)
   ) {
@@ -29,9 +31,14 @@ fun CustomTopAppBar(onClickNavigateOnBack:() -> Unit) {
     ) {
       Icon(
         painter = painterResource(id = R.drawable.ic_arrow_back),
-        contentDescription = ""
+        contentDescription = stringResource(R.string.back_to_home_screen_icon)
       )
     }
-    Text(text = "Карты", modifier = Modifier.align(Alignment.Center))
+    Text(
+      text = "Карты",
+      modifier = Modifier.align(Alignment.Center),
+      style = AppTheme.typography.bodySemibold,
+      color = AppTheme.colors.textPrimary
+    )
   }
 }

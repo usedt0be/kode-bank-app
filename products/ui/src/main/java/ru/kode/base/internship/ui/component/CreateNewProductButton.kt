@@ -19,8 +19,8 @@ fun CreateNewProductButton(onClickCreateProduct: () -> Unit) {
     modifier = Modifier.fillMaxWidth()
   ) {
     PrimaryButton(
-      onClick = { /*TODO*/ },
-      text = stringResource(id = R.string.create_new_product, "createNewProduct"),
+      onClick = { onClickCreateProduct() },
+      text = stringResource(id = R.string.create_new_product, ),
     )
   }
 }

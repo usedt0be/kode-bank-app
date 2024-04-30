@@ -19,15 +19,15 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 
 @Composable
-fun CardActionItem(onClickRenameCard:(String) -> Unit, iconId: Int, actionName: String) {
+fun CardDetailsActionListItem(onClickCardAction:(String) -> Unit, iconId: Int, actionName: String) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
       .heightIn(min = 56.dp)
-      .clickable { onClickRenameCard(actionName) }
+      .clickable { onClickCardAction(actionName) }
       .padding(16.dp),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.Bottom
+    verticalAlignment = Alignment.CenterVertically
   )
   {
     Icon(
@@ -50,8 +50,8 @@ fun CardActionItem(onClickRenameCard:(String) -> Unit, iconId: Int, actionName: 
 @Preview
 @Composable
 fun CardActionItemPreview() {
-  CardActionItem(
-    onClickRenameCard = {},
+  CardDetailsActionListItem(
+    onClickCardAction = {},
     iconId =R.drawable.ic_rename_card,
     "Переименовать карту"
   )

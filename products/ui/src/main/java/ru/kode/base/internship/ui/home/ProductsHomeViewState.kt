@@ -15,7 +15,7 @@ data class ProductsHomeViewState(
   val refreshing: Boolean = false,
   val accountsWithCards: List<BankAccountEntity> = emptyList(),
 
-
   val expandedCards: List<CardEntity> = emptyList(),
+
   val isLoading: Boolean = depositsState is LceState.Loading && bankAccountsState is LceState.Loading,
 )

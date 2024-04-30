@@ -7,6 +7,5 @@ sealed class ScreenRoute(val path: String) {
 
   data object ProductsHome : ScreenRoute(path = "products-home")
 
-  data object CardDetails: ScreenRoute(path = "card-details")
-
+  data object CardDetails : ScreenRoute(path = "card-details")
 }
