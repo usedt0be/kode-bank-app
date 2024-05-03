@@ -4,6 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import ru.kode.base.internship.domain.entity.BankAccountEntity
 
 interface BankAccountRepository {
-  val bankAccount: Flow<List<BankAccountEntity>>
-  fun updateBankAccountMocks()
+  val bankAccountFlow: Flow<List<BankAccountEntity>>
+  fun fetchBankAccount()
 }

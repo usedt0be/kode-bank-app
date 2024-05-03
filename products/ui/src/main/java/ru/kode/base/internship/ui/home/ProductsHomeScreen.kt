@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -55,13 +56,15 @@ fun ProductsHomeScreen(
 
   val pullRefreshState = rememberPullRefreshState(
     refreshing = false,
-    onRefresh = { intents.refreshData() }
+    onRefresh = { intents.refresh() }
   )
+
   var createButtonIsVisible by remember { mutableStateOf(false) }
 
   if (state.bankAccountsState is LceState.Content && state.depositsState is LceState.Content) {
     createButtonIsVisible = true
   }
+
 
   if (state.bankAccountsState == LceState.Loading || state.depositsState == LceState.Loading) {
     ShimmerEffect()
@@ -80,7 +83,7 @@ fun ProductsHomeScreen(
             modifier = Modifier.padding(start = 16.dp, top = 47.dp, end = 16.dp)
           ) {
             Text(
-              text = stringResource(id = R.string.main_description, "Main"),
+              text = stringResource(id = R.string.main_description, ),
               style = AppTheme.typography.title,
             )
           }
@@ -97,7 +100,7 @@ fun ProductsHomeScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
-                text = stringResource(id = R.string.bankAccounts, "bankAccounts"),
+                text = stringResource(id = R.string.bankAccounts, ),
                 modifier = Modifier
                   .fillMaxWidth()
                   .padding(start = 16.dp),
@@ -112,22 +115,25 @@ fun ProductsHomeScreen(
           ) { index, bankAccount ->
             BankAccountItem(
               bankAccount = bankAccount,
-              onClickExpand = { cardListExpanded ->
+              onClickExpand = {cardListExpanded ->
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {
                   intents.hideCards(bankAccount)
                 }
-              }
+              },
+              onClickGetDetails = intents.getCardDetails
             )
-            if (index != bankAccounts.lastIndex) CustomDivider()
+            if (index != bankAccounts.lastIndex)  {
+              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+            }
           }
         }
 
         if (state.bankAccountsState == LceState.Error("Failed to load accounts")) {
           createButtonIsVisible = false
           item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refreshData() })
+            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
           }
         } else {
           bankAccountsSection()
@@ -156,14 +162,16 @@ fun ProductsHomeScreen(
           }
           itemsIndexed(items = deposits) { index: Int, deposit ->
             DepositItem(deposit = deposit, onClickCheckDeposit = { intents.checkDeposit() })
-            if (index != deposits.lastIndex) CustomDivider()
+            if (index != deposits.lastIndex) {
+              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+            }
           }
         }
 
         if (state.depositsState == LceState.Error("Failed to load deposits")) {
           createButtonIsVisible = false
           item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refreshData() })
+            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
           }
         } else {
           depositSection()
@@ -172,6 +180,8 @@ fun ProductsHomeScreen(
         item {
           Spacer(modifier = Modifier.height(16.dp))
         }
+
+        Log.d("bank_BTN_state_2", "$createButtonIsVisible")
 
         if (createButtonIsVisible) {
           item {
@@ -190,3 +200,4 @@ fun ProductsHomeScreen(
     }
   }
 }
+

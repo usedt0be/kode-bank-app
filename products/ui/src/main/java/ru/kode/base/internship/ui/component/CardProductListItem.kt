@@ -27,20 +27,21 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun CardItem(card: CardEntity, onClickCheckCard: () -> Unit) {
+fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> Unit) {
+
   Row(
     modifier = Modifier
       .height(72.dp)
       .fillMaxWidth()
       .clickable {
-        onClickCheckCard()
+        onClickDetailsCard(card.cardId)
       }
       .background(color = AppTheme.colors.backgroundSecondary),
     verticalAlignment = Alignment.CenterVertically
   ) {
     Icon(
       painter = painterResource(id = R.drawable.input),
-      contentDescription = stringResource(id = R.string.currency_icon_description, "currencyIcon"),
+      contentDescription = stringResource(id = R.string.currency_icon_description),
       modifier = Modifier.padding(start = 16.dp),
       tint = Color.Unspecified
     )
@@ -55,7 +56,7 @@ fun CardItem(card: CardEntity, onClickCheckCard: () -> Unit) {
       )
       Text(
         text = if (card.status == Status.Blocked) {
-          stringResource(id = R.string.blocked, "cardIsBlocked")
+          stringResource(id = R.string.blocked)
         } else {
           card.type
         },
@@ -77,7 +78,7 @@ fun CardItem(card: CardEntity, onClickCheckCard: () -> Unit) {
       } else {
         painterResource(id = R.drawable.visa)
       },
-      contentDescription = stringResource(id = R.string.card_icon_description, "cardIcon"),
+      contentDescription = stringResource(id = R.string.card_icon_description),
       modifier = Modifier.padding(end = 16.dp),
       tint = Color.Unspecified
     )
@@ -86,8 +87,8 @@ fun CardItem(card: CardEntity, onClickCheckCard: () -> Unit) {
 
 @Preview
 @Composable
-fun CardItemPreview() {
-  CardItem(
+fun CardListItemPreview() {
+  CardProductListItem(
     card = CardEntity(
       cardId = CardEntity.Id("41"),
       name = "Тинькофф платинум)))",
@@ -98,6 +99,6 @@ fun CardItemPreview() {
       expireAt = "02.04.2025",
       accountId = "15135"
     ),
-    onClickCheckCard = {}
+    onClickDetailsCard = {}
   )
 }

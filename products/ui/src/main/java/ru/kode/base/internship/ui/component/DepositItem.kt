@@ -41,7 +41,7 @@ fun DepositItem(deposit: DepositsEntity, onClickCheckDeposit: () -> Unit) {
         Currency.USD -> painterResource(id = R.drawable.ic_usd)
         else -> painterResource(id = R.drawable.ic_eur)
       },
-      contentDescription = stringResource(id = R.string.currency_icon_description, "currencyIcon"),
+      contentDescription = stringResource(id = R.string.currency_icon_description, ),
       modifier = Modifier.padding(start = 16.dp),
       tint = Color.Unspecified
     )
@@ -61,7 +61,7 @@ fun DepositItem(deposit: DepositsEntity, onClickCheckDeposit: () -> Unit) {
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-          text = "${stringResource(id = R.string.rate, "rate")} ${deposit.rate}%",
+          text = "Ставка ${deposit.rate}%",
           modifier = Modifier.alignByBaseline(),
           style = MaterialTypography.caption
         )
@@ -79,7 +79,7 @@ fun DepositItem(deposit: DepositsEntity, onClickCheckDeposit: () -> Unit) {
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-          text = "${stringResource(id = R.string.card_expiry_date_prefix, "until")} ${deposit.cardExpiryDate}",
+          text =  "До ${deposit.cardExpiryDate}",
           modifier = Modifier.alignByBaseline(),
           style = MaterialTypography.caption
         )

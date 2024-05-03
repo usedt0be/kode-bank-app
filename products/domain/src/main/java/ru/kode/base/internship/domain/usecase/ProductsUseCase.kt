@@ -1,4 +1,4 @@
-package ru.kode.base.internship.domain
+package ru.kode.base.internship.domain.usecase
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -8,9 +8,7 @@ import ru.kode.base.core.di.AppScope
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.internship.core.domain.BaseUseCase
 import ru.kode.base.internship.core.domain.entity.LceState
-import ru.kode.base.internship.domain.entity.BankAccountEntity
 import ru.kode.base.internship.domain.entity.CardEntity
-import ru.kode.base.internship.domain.entity.DepositsEntity
 import ru.kode.base.internship.domain.repository.BankAccountRepository
 import ru.kode.base.internship.domain.repository.CardRepository
 import ru.kode.base.internship.domain.repository.DepositRepository
@@ -27,48 +25,41 @@ class ProductsUseCase @Inject constructor(
     val bankAccountsState: LceState = LceState.None,
     val depositsState: LceState = LceState.None,
     val cardsState: LceState = LceState.None,
-    val listAcc: List<BankAccountEntity> = emptyList()
+    val bankAccountBalanceState: LceState = LceState.None,
   )
 
-  suspend fun fetchBankAccounts(): Flow<List<BankAccountEntity>> {
+
+  suspend fun fetchBankAccounts()  {
     setState { copy(bankAccountsState = LceState.Loading) }
     delay(2000)
-    return try {
-      bankAccountRepository.updateBankAccountMocks()
-      val bankAccountFlow = bankAccountRepository.bankAccount
-
+    try {
+      bankAccountRepository.fetchBankAccount()
       if (Random.nextBoolean()) {
         setState { copy(bankAccountsState = LceState.Content) }
       } else {
         setState { copy(bankAccountsState = LceState.Error("Failed to load accounts")) }
       }
-      bankAccountFlow
     } catch (e: Exception) {
       setState { copy(bankAccountsState = LceState.Error("Failed to load accounts")) }
       throw e
     }
   }
 
-  val bankAccounts = bankAccountRepository.bankAccount
+  val bankAccounts = bankAccountRepository.bankAccountFlow
 
   val bankAccountsState: Flow<LceState> =
     stateFlow.map { it.bankAccountsState }.distinctUntilChanged()
 
-  suspend fun fetchDeposits(): Flow<List<DepositsEntity>> {
+  suspend fun fetchDeposits()  {
     setState { copy(depositsState = LceState.Loading) }
     delay(2000)
-
-    return try {
-      depositsRepository.updateDepositMocks()
-      val deposits = depositsRepository.depositsFlow
-
+    try {
+      depositsRepository.fetchDeposits()
       if (Random.nextBoolean()) {
         setState { copy(depositsState = LceState.Content) }
       } else {
         setState { copy(depositsState = LceState.Error("Failed to load deposits")) }
       }
-
-      deposits
     } catch (e: Exception) {
       setState { copy(depositsState = LceState.Error("Failed to load deposits")) }
       throw e
@@ -81,19 +72,35 @@ class ProductsUseCase @Inject constructor(
     it.depositsState
   }.distinctUntilChanged()
 
-  suspend fun fetchCardDetails(cardId: String): Flow<CardEntity> {
-    setState { copy(bankAccountsState = LceState.Loading) }
-    return try {
-      val cardDetails = cardRepository.fetchCards(cardId)
+  suspend fun fetchCardDetails(cardId: String) {
+    setState { copy(cardsState = LceState.Loading) }
+    setState { copy(bankAccountsState = LceState.Loading)}
+    try {
+      cardRepository.fetchCardDetails(cardId)
+      cardRepository.fetchBankAccountBalance()
+      setState { copy(cardsState = LceState.Content) }
       setState { copy(bankAccountsState = LceState.Content) }
-      cardDetails
     } catch (e: Exception) {
-      setState { copy(bankAccountsState = LceState.Error(e.message)) }
+      setState { copy(bankAccountsState = LceState.Error("Failed to load bankAccount")) }
+      setState { copy(cardsState = LceState.Error("Failed to load cards")) }
       throw e
     }
   }
 
+  fun renameCard(cardId: CardEntity.Id, newName:String) {
+      cardRepository.renameCard(cardId, newName)
+  }
+
+  val card = cardRepository.card
+
   val cardState: Flow<LceState> = stateFlow.map {
+    it.cardsState
+  }.distinctUntilChanged()
+
+
+  val bankAccountBalance = cardRepository.bankAccountBalance
+
+  val bankAccountBalanceState: Flow<LceState> = stateFlow.map {
     it.cardsState
   }.distinctUntilChanged()
 
@@ -107,4 +114,5 @@ class ProductsUseCase @Inject constructor(
       throw e
     }
   }
+
 }

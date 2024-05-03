@@ -1,9 +1,12 @@
 package ru.kode.base.internship.domain.entity
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class CardEntity(
   val cardId: Id,
   val accountId: String,
-  val name: String,
+  var name: String,
   val number: String,
   val expireAt: String,
   val paymentSystem: PaymentSystem,
@@ -11,5 +14,5 @@ data class CardEntity(
   val type: String,
 ) {
   @JvmInline
-  value class Id(val cardId: String)
+  value class Id(val value: String)
 }
