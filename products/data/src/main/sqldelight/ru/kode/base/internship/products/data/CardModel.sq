@@ -1,0 +1,23 @@
+CREATE TABLE CardModel(
+    id INTEGER NOT NULL PRIMARY KEY ,
+    accountId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    number TEXT NOT NULL,
+    expiredAt TEXT NOT NULL,
+    paymentSystem TEXT NOT NULL,
+    status TEXT NOT NULL,
+    type TEXT NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES BankAccountModel(id)
+);
+
+getAllCards:
+SELECT * FROM CardModel;
+
+getCardById:
+SELECT * FROM CardModel WHERE id = :id;
+
+insertCards:
+INSERT OR REPLACE INTO CardModel VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+insertCardObject:
+INSERT OR REPLACE INTO CardModel VALUES ?;

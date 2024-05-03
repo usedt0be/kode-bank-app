@@ -8,7 +8,7 @@ data class CardEntity(
   val accountId: String,
   var name: String,
   val number: String,
-  val expireAt: String,
+  val expiredAt: String,
   val paymentSystem: PaymentSystem,
   val status: Status,
   val type: String,

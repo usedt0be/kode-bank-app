@@ -5,5 +5,7 @@ import ru.kode.base.internship.domain.entity.BankAccountEntity
 
 interface BankAccountRepository {
   val bankAccountFlow: Flow<List<BankAccountEntity>>
-  fun fetchBankAccount()
+  suspend fun fetchBankAccount()
+
+  fun getBankAccountsFromDb():Flow<List<BankAccountEntity>>
 }
