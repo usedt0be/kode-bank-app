@@ -1,13 +1,16 @@
 package ru.kode.base.internship.routing
 
+import ru.kode.base.internship.domain.entity.CardEntity
+
 sealed class FlowEvent {
   data object UserIdentificationDismissed : FlowEvent()
   data object LoginRequested : FlowEvent()
   data object EnterPasswordDismissed : FlowEvent()
   data object UserLoggedIn : FlowEvent()
-  data object CreateNewProduct: FlowEvent()
+  data object CreateNewProduct : FlowEvent()
+  data object CheckDeposit : FlowEvent()
 
-  data object CheckCard: FlowEvent()
+  data object BackToHomeScreen: FlowEvent()
 
-  data object CheckDeposit: FlowEvent()
+  data class GetCardDetails(val cardId: CardEntity.Id) : FlowEvent()
 }

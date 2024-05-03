@@ -11,9 +11,9 @@ import ru.kode.base.core.routing.utils.animatedComposable
 import ru.kode.base.core.viewmodel.ViewModelProviders
 import ru.kode.base.core.viewmodel.ViewModelStore
 import ru.kode.base.internship.routing.di.AppFlowScope
+import ru.kode.base.internship.ui.details.CardDetailsScreen
 import ru.kode.base.internship.ui.featureinprogress.FeatureInProgressScreen
 import ru.kode.base.internship.ui.home.ProductsHomeScreen
-
 import ru.kode.base.internship.ui.identification.UserIdentificationScreen
 import ru.kode.base.internship.ui.password.EnterPasswordScreen
 import javax.inject.Inject
@@ -38,9 +38,13 @@ object AppFlow : GraphFlow() {
         FlowEvent.LoginRequested -> navController.navigate(ScreenRoute.EnterPassword.route)
 
         FlowEvent.UserLoggedIn -> navController.navigate(ScreenRoute.ProductsHome.route)
+
         FlowEvent.CreateNewProduct -> navController.navigate(ScreenRoute.FeatureInProgress.route)
-        FlowEvent.CheckCard -> navController.navigate(ScreenRoute.FeatureInProgress.route)
         FlowEvent.CheckDeposit -> navController.navigate(ScreenRoute.FeatureInProgress.route)
+
+        FlowEvent.BackToHomeScreen ->navController.navigate(ScreenRoute.ProductsHome.route)
+
+        is FlowEvent.GetCardDetails -> navController.navigate(ScreenRoute.CardDetails.route + "/${event.cardId.value}")
       }
     }
   }
@@ -60,7 +64,12 @@ object AppFlow : GraphFlow() {
     animatedComposable(ScreenRoute.ProductsHome.route, ScreenTransitionAnimation.Horizontal) {
       ProductsHomeScreen()
     }
-
+    animatedComposable(ScreenRoute.CardDetails.route + "/{cardId}", ScreenTransitionAnimation.Horizontal) {
+      backStackEntry ->
+      CardDetailsScreen(
+        cardId = backStackEntry.arguments?.getString("cardId")
+      )
+    }
   }
 
   private val ScreenRoute.route: String

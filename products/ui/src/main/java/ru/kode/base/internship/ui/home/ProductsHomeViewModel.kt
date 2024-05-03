@@ -1,58 +1,94 @@
 package ru.kode.base.internship.ui.home
 
-import android.util.Log
+import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
+import ru.kode.base.internship.domain.usecase.ProductsUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject
 
+@Stable
 class ProductsHomeViewModel @Inject constructor(
   private val flowEvents: MutableSharedFlow<FlowEvent>,
+  private val productsUseCase: ProductsUseCase,
 ) : BaseViewModel<ProductsHomeViewState, ProductsHomeIntents>() {
   override fun buildMachine(): Machine<ProductsHomeViewState> = machine {
     initial = ProductsHomeViewState() to {
-       viewModelScope.launch { fetchProducts() }
+      executeAsync {
+        productsUseCase.fetchDeposits()
+        productsUseCase.fetchBankAccounts()
+      }
     }
 
-    onEach(intent(ProductsHomeIntents::loadData)) {
-      action { _, _, _ -> fetchProducts() }
+    onEach(intent(ProductsHomeIntents::getCardDetails)) {
+      action { _, _, cardId ->
+        flowEvents.tryEmit(FlowEvent.GetCardDetails(cardId))
+      }
     }
 
-    onEach(dataState) {
-      transitionTo { state, lceState ->
+    onEach(productsUseCase.bankAccountsState) {
+      transitionTo { state, bankAccountsState ->
         state.copy(
-          dataIsLoading = lceState
+          bankAccountsState = bankAccountsState
         )
       }
     }
 
-    onEach(data) {
-      transitionTo { state, data ->
-        Log.d("userData", "$data")
+    onEach(productsUseCase.bankAccounts) {
+      transitionTo { state, bankAccountsData ->
         state.copy(
-          data = data
+          bankAccountsData = bankAccountsData
         )
       }
     }
 
-    onEach(intent(ProductsHomeIntents::refreshData)) {
-      action {_, _, _ -> fetchProducts() }
+    onEach(productsUseCase.depositsState) {
+      transitionTo { state, depositsState ->
+        state.copy(
+          depositsState = depositsState
+        )
+      }
     }
 
-    onEach(intent(ProductsHomeIntents::createNewProduct)) {
-      action { _, _, _ ->
-        flowEvents.tryEmit(FlowEvent.CreateNewProduct)
+    onEach(productsUseCase.deposits) {
+      transitionTo { state, depositsData ->
+        state.copy(
+          depositsData = depositsData
+        )
       }
     }
-    onEach(intent(ProductsHomeIntents::checkCard)) {
-      action { _, _, _ ->
-        flowEvents.tryEmit(FlowEvent.CreateNewProduct)
+
+    onEach(intent(ProductsHomeIntents::expandCards)) {
+      transitionTo { state, bankAccount ->
+        state.copy(
+          accountsWithCards = state.accountsWithCards + bankAccount
+        )
       }
     }
+
+    onEach(intent(ProductsHomeIntents::hideCards)) {
+      transitionTo { state, bankAccount ->
+        state.copy(
+          accountsWithCards = state.accountsWithCards - bankAccount
+        )
+      }
+    }
+
+    onEach(intent(ProductsHomeIntents::refresh)) {
+      action { _, _, _ ->
+        viewModelScope.launch(Dispatchers.IO) {
+          executeAsync {
+            productsUseCase.fetchBankAccounts()
+            productsUseCase.fetchDeposits()
+          }
+        }
+      }
+    }
+
 
     onEach(intent(ProductsHomeIntents::checkDeposit)) {
       action { _, _, _ ->

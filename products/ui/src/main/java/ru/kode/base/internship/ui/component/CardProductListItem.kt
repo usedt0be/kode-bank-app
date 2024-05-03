@@ -20,29 +20,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.entity.PaymentSystem
+import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import ru.kode.base.internship.ui.home.Card
-
 
 @Composable
-fun CardItem(card: Card, onClickCheckCard: () -> Unit) {
+fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> Unit) {
 
   Row(
     modifier = Modifier
       .height(72.dp)
       .fillMaxWidth()
       .clickable {
-        onClickCheckCard()
+        onClickDetailsCard(card.cardId)
       }
       .background(color = AppTheme.colors.backgroundSecondary),
     verticalAlignment = Alignment.CenterVertically
-
   ) {
-
     Icon(
       painter = painterResource(id = R.drawable.input),
-      contentDescription ="Russian ruble icon",
+      contentDescription = stringResource(id = R.string.currency_icon_description),
       modifier = Modifier.padding(start = 16.dp),
       tint = Color.Unspecified
     )
@@ -51,13 +50,21 @@ fun CardItem(card: Card, onClickCheckCard: () -> Unit) {
 
     Column(modifier = Modifier, verticalArrangement = Arrangement.Center) {
       Text(
-        text = card.description,
+        text = card.name,
         modifier = Modifier,
         style = AppTheme.typography.body2
       )
       Text(
-        text = if (card.isBlocked) stringResource(id = R.string.blocked) else card.type,
-        color = if (card.isBlocked) AppTheme.colors.indicatorContendError else AppTheme.colors.textSecondary,
+        text = if (card.status == Status.Blocked) {
+          stringResource(id = R.string.blocked)
+        } else {
+          card.type
+        },
+        color = if (card.status == Status.Blocked) {
+          AppTheme.colors.indicatorContendError
+        } else {
+          AppTheme.colors.textSecondary
+        },
         modifier = Modifier.padding(top = 3.dp),
         style = AppTheme.typography.caption1
       )
@@ -66,28 +73,32 @@ fun CardItem(card: Card, onClickCheckCard: () -> Unit) {
     Spacer(modifier = Modifier.weight(1f))
 
     Icon(
-      if (card.paymentSystem == "MasterCard") {
+      if (card.paymentSystem == PaymentSystem.MasterCard) {
         painterResource(id = R.drawable.mastercard)
       } else {
         painterResource(id = R.drawable.visa)
       },
-      contentDescription = "Expand Button",
+      contentDescription = stringResource(id = R.string.card_icon_description),
       modifier = Modifier.padding(end = 16.dp),
       tint = Color.Unspecified
     )
   }
 }
 
-
-
 @Preview
 @Composable
-fun CardItemPreview() {
-  CardItem(card = Card(
-    description = "Тинькофф платинум)))",
-    type = "Физическая",
-    paymentSystem = "Visa",
-    number = "5413 4124 4123 4124",
-    isBlocked = false
-  ), onClickCheckCard = {})
+fun CardListItemPreview() {
+  CardProductListItem(
+    card = CardEntity(
+      cardId = CardEntity.Id("41"),
+      name = "Тинькофф платинум)))",
+      type = "Физическая",
+      paymentSystem = PaymentSystem.Visa,
+      number = "5413 4124 4123 4124",
+      status = Status.Active,
+      expireAt = "02.04.2025",
+      accountId = "15135"
+    ),
+    onClickDetailsCard = {}
+  )
 }

@@ -12,6 +12,7 @@ dependencies {
   api project(":core:ui:uikit")
 
   api project(':routing')
+  api project(":products:domain")
 
   implementation libs.accompanist.swipe.refresh
 
