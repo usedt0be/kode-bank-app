@@ -59,15 +59,14 @@ fun RenameDialog(
           .padding(top = 8.dp)
       ) {
         Text(
-          text = "Введите новое название"
+          text = stringResource(R.string.write_new_name)
         )
       }
       TextField(
         value = enteredName,
-        onValueChange =  { text ->
-                         cardName = text
+        onValueChange = { text ->
+          cardName = text
           changeText(text)
-
         },
         colors = TextFieldDefaults.textFieldColors(
           backgroundColor = AppTheme.colors.backgroundSecondary,

@@ -23,4 +23,9 @@
   <string name="cancel_rename_button_text">Отмена</string>
   <string name="back_to_home_screen_icon">Иконка возвращения на домашний экран</string>
   <string name="nfc_icon">Иконка NFC</string>
+  <string name="bank_account_name">Cчет рассчетный</string>
+  <string name="cards_description">Карты</string>
+  <string name="write_new_name">Введите новое название</string>
+  <string name="deposit_close_date">До %1$s</string>
+  <string name="deposit_rate">Ставка %1$s%</string>
 </resources>

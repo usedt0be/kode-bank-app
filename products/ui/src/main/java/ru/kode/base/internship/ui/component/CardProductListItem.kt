@@ -55,12 +55,12 @@ fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> 
         style = AppTheme.typography.body2
       )
       Text(
-        text = if (card.status == Status.Blocked) {
+        text = if (card.status == Status.ACTIVE) {
           stringResource(id = R.string.blocked)
         } else {
           card.type
         },
-        color = if (card.status == Status.Blocked) {
+        color = if (card.status == Status.ACTIVE) {
           AppTheme.colors.indicatorContendError
         } else {
           AppTheme.colors.textSecondary
@@ -93,10 +93,10 @@ fun CardListItemPreview() {
       cardId = CardEntity.Id("41"),
       name = "Тинькофф платинум)))",
       type = "Физическая",
-      paymentSystem = PaymentSystem.Visa,
+      paymentSystem = PaymentSystem.VISA,
       number = "5413 4124 4123 4124",
-      status = Status.Active,
-      expireAt = "02.04.2025",
+      status = Status.ACTIVE,
+      expiredAt = "02.04.2025",
       accountId = "15135"
     ),
     onClickDetailsCard = {}

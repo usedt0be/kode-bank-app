@@ -3,11 +3,12 @@ package ru.kode.base.internship.domain.entity
 import androidx.compose.runtime.Immutable
 
 @Immutable
-data class DepositsEntity(
+data class DepositEntity(
   val depositId: String,
-  val description: String,
+  val name: String,
   val currencyType: Currency,
+  val status: Status,
   val balance: String,
   val rate: String,
-  val cardExpiryDate: String
+  val closeDate: String
 )

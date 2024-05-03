@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.domain.Balance
 import ru.kode.base.internship.domain.entity.BankAccountEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.entity.Currency
@@ -30,6 +31,9 @@ import ru.kode.base.internship.domain.entity.PaymentSystem
 import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 @Composable
 fun BankAccountItem(
@@ -38,6 +42,8 @@ fun BankAccountItem(
   onClickGetDetails:(CardEntity.Id)-> Unit,
 ) {
   var cardListExpanded by remember { mutableStateOf(false) }
+
+  val balance = Balance(bankAccount.accountBalance, bankAccount.currency).format()
 
   Column(modifier = Modifier.fillMaxWidth()) {
     Row(
@@ -62,12 +68,12 @@ fun BankAccountItem(
 
       Column(modifier = Modifier) {
         Text(
-          text = bankAccount.description,
+          text = stringResource(R.string.bank_account_name),
           modifier = Modifier,
           style = AppTheme.typography.body2
         )
         Text(
-          text = bankAccount.accountBalance,
+          text = balance,
           modifier = Modifier,
           style = AppTheme.typography.body2,
           color = AppTheme.colors.contendAccentPrimary
@@ -107,14 +113,14 @@ fun BankAccountItem(
   }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun BankAccountItemPreview() {
      BankAccountItem(
       bankAccount = BankAccountEntity(
-        status = Status.Active,
+        status = Status.ACTIVE,
         number = "4141",
-        description = "Счет расчетный",
         accountBalance = "457334.00",
         currency = Currency.RUB,
         accountId = "421",
@@ -126,8 +132,8 @@ fun BankAccountItemPreview() {
             type = "Физическая",
             number = "4124 4144 5135 5131",
             paymentSystem = PaymentSystem.MasterCard,
-            status = Status.Active,
-            expireAt = "12.02.2028"
+            status = Status.ACTIVE,
+            expiredAt = "12.02.2028"
           ),
           CardEntity(
             cardId = CardEntity.Id("48"),
@@ -135,9 +141,9 @@ fun BankAccountItemPreview() {
             name = "Карта зарплатная",
             type = "Физическая",
             number = "4124 4144 5135 5511",
-            paymentSystem = PaymentSystem.Visa,
-            status = Status.Active,
-            expireAt = "12.02.2028"
+            paymentSystem = PaymentSystem.VISA,
+            status = Status.ACTIVE,
+            expiredAt = "12.02.2028"
           )
         ),
       ),

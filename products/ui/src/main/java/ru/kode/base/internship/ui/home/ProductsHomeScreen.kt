@@ -42,6 +42,9 @@ import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 import ru.kode.base.internship.ui.effects.ShimmerEffect
 import ru.kode.base.internship.ui.error.LoadingErrorMessage
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

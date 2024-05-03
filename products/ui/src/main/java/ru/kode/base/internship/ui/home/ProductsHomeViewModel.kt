@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

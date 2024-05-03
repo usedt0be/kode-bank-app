@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
 import ru.kode.base.internship.products.ui.R
-import ru.kode.base.internship.ui.component.CardDetailsActionListItem
-import ru.kode.base.internship.ui.component.CardDetailsActionRow
 import ru.kode.base.internship.ui.component.CardDetailsItem
 import ru.kode.base.internship.ui.component.CustomTopAppBar
 import ru.kode.base.internship.ui.component.RenameDialog
@@ -79,7 +77,7 @@ fun CardDetailsScreen(
       .imePadding()
   )
   {
-    CustomTopAppBar(onClickNavigateOnBack = { intents.navigateOnBack() })
+    CustomTopAppBar(onNavigateBackClick = { intents.navigateOnBack() })
 
     Box(
       modifier = Modifier.fillMaxWidth(),
@@ -90,7 +88,7 @@ fun CardDetailsScreen(
 
     Spacer(modifier = Modifier.height(40.dp))
 
-    CardDetailsActionRow()
+    CardActionRow()
 
 
     Column(
@@ -103,11 +101,11 @@ fun CardDetailsScreen(
     ) {
       actions.forEachIndexed { index, map ->
         map.onEach {
-          CardDetailsActionListItem(onClickCardAction = { actionName ->
+          CardActionListItem(onClickCardAction = { actionName ->
             when(actionName) {
                "Переименовать карту" -> intents.openOrCloseDialog(true)
             }
-          }, iconId = it.key, actionName = it.value)
+          }, iconResId = it.key, actionName = it.value)
         }
         if (index < actions.lastIndex) {
           Divider(
