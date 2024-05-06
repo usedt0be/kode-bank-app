@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.details
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
 import ru.kode.base.internship.products.ui.R
+import ru.kode.base.internship.ui.cardUiMapper
 import ru.kode.base.internship.ui.component.CardDetailsItem
 import ru.kode.base.internship.ui.component.CustomTopAppBar
 import ru.kode.base.internship.ui.component.RenameDialog
@@ -42,31 +44,25 @@ fun CardDetailsScreen(
   viewModel: CardDetailsViewModel = daggerViewModel(),
 ) = AppScreen(viewModel = viewModel, intents = rememberViewIntents()) { state, intents ->
 
+  val card = cardUiMapper(state.balance, state.card)
 
   LaunchedEffect(key1 = cardId) {
     if (cardId != null) {
-      intents.getCardById(cardId)
+      intents.openCardDetails(cardId)
     }
   }
 
-
-  if(state.dialogOpened) {
+  if(state.showDialog) {
     RenameDialog(
-      changeText = { enteredName ->
-        intents.renameCard(enteredName)
+      onConfirm = { newName ->
+        intents.confirm(newName)
+        intents.dismissDialog()
       },
-      enteredName = state.enteredName,
-      onClickConfirm = {closeDialog ->
-        intents.confirmRename()
-        intents.openOrCloseDialog(closeDialog)
-      },
-      onClickDismiss = { closeDialog, clearTextField ->
-        intents.openOrCloseDialog(closeDialog)
-        intents.renameCard(clearTextField)
+      onDismiss = {
+        intents.dismissDialog()
       }
     )
   }
-
 
   Column(
     modifier = Modifier
@@ -83,7 +79,7 @@ fun CardDetailsScreen(
       modifier = Modifier.fillMaxWidth(),
       contentAlignment = Alignment.Center
     ) {
-      CardDetailsItem(card = state.card, balance = state.bankAccountBalance)
+      CardDetailsItem(card = card)
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -103,7 +99,7 @@ fun CardDetailsScreen(
         map.onEach {
           CardActionListItem(onClickCardAction = { actionName ->
             when(actionName) {
-               "Переименовать карту" -> intents.openOrCloseDialog(true)
+               "Переименовать карту" -> intents.openDialog()
             }
           }, iconResId = it.key, actionName = it.value)
         }

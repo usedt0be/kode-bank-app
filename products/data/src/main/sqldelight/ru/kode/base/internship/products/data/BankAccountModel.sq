@@ -13,10 +13,11 @@ SELECT * FROM BankAccountModel;
 getBankAccountById:
 SELECT * FROM BankAccountModel WHERE id = :id;
 
-insertBankAcco:
+insertBankAccount:
 INSERT OR REPLACE INTO
 BankAccountModel(id, status, number, balance, currency)
 VALUES(?, ?, ?, ?, ? );
 
 insertBankAccountObject:
 INSERT OR REPLACE INTO BankAccountModel(id, status, number, balance, currency) VALUES ?;
+

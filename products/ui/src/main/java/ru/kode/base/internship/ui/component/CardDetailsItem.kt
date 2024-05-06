@@ -23,19 +23,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.kode.base.internship.core.data.network.serializer.LocalDateTimeSerializer
-import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.entity.PaymentSystem
 import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import java.time.LocalDate
+import ru.kode.base.internship.ui.entity.CardEntityUi
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CardDetailsItem(card: CardEntity, balance: String) {
+fun CardDetailsItem(card: CardEntityUi) {
 
   Card(
     modifier = Modifier
@@ -65,8 +65,9 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
         Icon(
           painter = when (card.paymentSystem) {
             PaymentSystem.VISA -> painterResource(id = R.drawable.ic_visa)
+            PaymentSystem.Visa -> painterResource(id = R.drawable.ic_visa)
             PaymentSystem.MasterCard -> painterResource(id = R.drawable.ic_mastercard)
-          },
+          } ,
           contentDescription = "Payment system icon",
           tint = Color.Unspecified,
           modifier = Modifier.alignByBaseline()
@@ -89,15 +90,15 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
 
       if (card.status == Status.ACTIVE) {
         Text(
-          text = stringResource(id = R.string.blocked),
+          text = card.balance.format(),
           style = AppTheme.typography.bodyMedium,
-          color = AppTheme.colors.indicatorContendError
+          color = AppTheme.colors.textPrimary
         )
       } else {
         Text(
-          text = balance,
+          text = stringResource(id = R.string.blocked),
           style = AppTheme.typography.bodyMedium,
-          color = AppTheme.colors.textPrimary
+          color = AppTheme.colors.indicatorContendError
         )
       }
 
@@ -140,12 +141,12 @@ fun maskCardNumber(input: String): String {
 @Composable
 fun CardItemPreview() {
   CardDetailsItem(
-    balance = "102",
-    card = CardEntity(
-      cardId = CardEntity.Id("41"),
+    card = CardEntityUi(
+      balance = Balance("23", Currency.RUB),
+      cardId = "41",
       name = "Тинькофф платинум)))",
       type = "Физическая",
-      paymentSystem = PaymentSystem.VISA,
+      paymentSystem = PaymentSystem.Visa,
       number = "5413 4124 4123 4124",
       status = Status.ACTIVE,
       expiredAt = "02.04.2025",

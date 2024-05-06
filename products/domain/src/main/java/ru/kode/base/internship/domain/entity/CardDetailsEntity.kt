@@ -2,14 +2,17 @@ package ru.kode.base.internship.domain.entity
 
 import androidx.compose.runtime.Immutable
 
-
 @Immutable
-data class CardEntity(
+data class CardDetailsEntity(
+  val cardId: Id,
   val accountId: String,
-  val cardId: Long,
-  val name: String,
+  var name: String,
   val number: String,
+  val expiredAt: String,
   val paymentSystem: PaymentSystem,
   val status: Status,
   val type: String,
-)
+) {
+  @JvmInline
+  value class Id(val value: String)
+}

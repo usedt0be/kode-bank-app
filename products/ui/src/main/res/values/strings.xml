@@ -28,4 +28,5 @@
   <string name="write_new_name">Введите новое название</string>
   <string name="deposit_close_date">До %1$s</string>
   <string name="deposit_rate">Ставка %1$s%</string>
+  <string name="active_card">Физическая</string>
 </resources>

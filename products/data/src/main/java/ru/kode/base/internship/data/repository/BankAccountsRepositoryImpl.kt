@@ -1,97 +1,123 @@
 package ru.kode.base.internship.data.repository
 
 import android.util.Log
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
-import ru.kode.base.internship.data.mapper.bankAccountMapper
 import ru.kode.base.internship.data.mapper.cardEntityMapper
+import ru.kode.base.internship.data.mapper.toBankAccountEntity
 import ru.kode.base.internship.data.mapper.toBankAccountModel
 import ru.kode.base.internship.data.mapper.toCardEntity
 import ru.kode.base.internship.data.mapper.toCardModel
 import ru.kode.base.internship.data.network.ProductApi
-import ru.kode.base.internship.data.storage.dataSource.BankAccountDataSource
-import ru.kode.base.internship.data.storage.dataSource.CardDataSource
 import ru.kode.base.internship.domain.entity.BankAccountEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.domain.repository.BankAccountRepository
+import ru.kode.base.internship.products.data.ProductsDB
 import javax.inject.Inject
 
 @ContributesBinding(AppScope::class)
 class BankAccountsRepositoryImpl @Inject constructor(
+  private val db: ProductsDB,
   private val api: ProductApi,
-  private val bankAccountDataSource: BankAccountDataSource,
-  private val cardDataSource: CardDataSource,
 ) : BankAccountRepository {
 
-
-  private var bankAccounts = MutableStateFlow<List<BankAccountEntity>>(emptyList())
-
-  override val bankAccountFlow: Flow<List<BankAccountEntity>>
-    get() = bankAccounts
-
-
+  private val bankAccountQueries = db.bankAccountModelQueries
+  private val cardQueries = db.cardModelQueries
   override suspend fun fetchBankAccount() {
     val bankAccountsResponse = api.getBankAccounts()
-    val bankAccountList = mutableListOf<BankAccountEntity>()
-    val cardsList = mutableListOf<CardEntity>()
+    val bankAccountEntityList = bankAccountsResponse.accounts.map { it.toBankAccountEntity() }
 
-    bankAccountsResponse.accounts.forEach { bankAccount ->
-      bankAccount.cards.forEach { card ->
-        val cardById = api.getCardById(card.card_id.toInt())
-
-        bankAccountList.add(bankAccountMapper(bankAccount, cardById))
-        cardsList.add(cardEntityMapper(card, cardById))
-      }
-    }
-
-
-    val bankAccountsSM = bankAccountList.map { it.toBankAccountModel() }
-
-    bankAccountDataSource.queries.transaction {
+    val bankAccountsSM = bankAccountEntityList.map { it.toBankAccountModel() }
+    bankAccountQueries.transaction {
       bankAccountsSM.forEach { bankAccount ->
-        bankAccountDataSource.queries.insertBankAccountObject(bankAccount)
+        bankAccountQueries.insertBankAccountObject(bankAccount)
       }
     }
 
-    val cardsSM = cardsList.map { it.toCardModel() }
 
-    cardDataSource.queries.transaction {
-      cardsSM.forEach { cardModel ->
-        cardDataSource.queries.insertCardObject(cardModel)
+    cardQueries.transaction {
+      bankAccountEntityList.forEach { bankAccountEntity ->
+        bankAccountEntity.cards.forEach { cardEntity ->
+          Log.d("CARD_ENTITY", "$cardEntity")
+          cardQueries.insertCardModelObject(cardEntity.toCardModel())
+        }
       }
     }
   }
 
-  override fun getBankAccountsFromDb():Flow<List<BankAccountEntity>> {
-    val bankAccountsDb = bankAccountDataSource.getAccounts().distinctUntilChanged()
-    val cardsDb = cardDataSource.getAllCards().distinctUntilChanged()
-    val bankAccountList = mutableListOf<BankAccountEntity>()
+  override fun getBankAccounts(): Flow<List<BankAccountEntity>> {
+    val bankAccountsFlow =
+      bankAccountQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO).map { bankAccounts ->
+        bankAccounts.map { bankAccountModel ->
+          bankAccountModel.toBankAccountEntity()
+        }
+      }.distinctUntilChanged()
 
-    return bankAccountsDb.combine(cardsDb) { bankAccounts, cards ->
-      bankAccounts.forEach { bankAccount ->
-        val relatedCards = cards.filter { it.accountId == bankAccount.id }.map { it.toCardEntity() }
+    val cardsFlow = cardQueries.getAllCards().asFlow().mapToList(Dispatchers.IO).map { cardModels ->
+      cardModels.map { cardModel ->
+        Log.d("CARD_MODEl", "$cardModel")
+        cardModel.toCardEntity()
+      }
+    }.distinctUntilChanged()
+
+    val bankEntityList = mutableListOf<BankAccountEntity>()
+   return bankAccountsFlow.combine(cardsFlow) { bankAccounts , cards ->
+      bankAccounts.forEach {bankAccount ->
+        val relatedCards = cards.filter { it.accountId == bankAccount.accountId }
+
+        Log.d("BANK_CARDS", "$bankAccount")
 
         val bankAccountEntity = BankAccountEntity(
-          accountId = bankAccount.id.toString(),
+          accountId = bankAccount.accountId,
           cards = relatedCards,
-          status = Status.valueOf(bankAccount.status),
+          status = Status.valueOf(bankAccount.status.toString()),
           number = bankAccount.number,
-          accountBalance = bankAccount.balance,
-          currency = Currency.valueOf(bankAccount.currency)
+          accountBalance = bankAccount.accountBalance,
+          currency = Currency.valueOf(bankAccount.currency.toString())
         )
-        bankAccountList.add(bankAccountEntity)
+        bankEntityList.add(bankAccountEntity)
       }
-      bankAccountList
+     bankEntityList
     }
   }
+
+
+
+
+
+//  override fun getBankAccounts(): Flow<List<BankAccountEntity>> {
+//    val bankAccountsDb = bankAccountDataSource.getAccounts().distinctUntilChanged()
+//    val cardsDb = cardDataSource.getAllCards().distinctUntilChanged()
+//    val bankAccountList = mutableListOf<BankAccountEntity>()
+//
+//    return bankAccountsDb.combine(cardsDb) { bankAccounts, cards ->
+//      bankAccounts.forEach { bankAccount ->
+//        val relatedCards = cards.filter { it.accountId == bankAccount.id }.map { it.toCardEntity() }
+//
+//        val bankAccountEntity = BankAccountEntity(
+//          accountId = bankAccount.id.toString(),
+//          cards = relatedCards,
+//          status = Status.valueOf(bankAccount.status),
+//          number = bankAccount.number,
+//          accountBalance = bankAccount.balance,
+//          currency = Currency.valueOf(bankAccount.currency)
+//
+//        )
+//        bankAccountList.add(bankAccountEntity)
+//      }
+//      bankAccountList
+//    }
+//  }
 }
 
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.entity.PaymentSystem
 import ru.kode.base.internship.domain.entity.Status
@@ -27,8 +28,7 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> Unit) {
-
+fun CardProductListItem(card: CardEntity, onClickDetailsCard:(Long) -> Unit) {
   Row(
     modifier = Modifier
       .height(72.dp)
@@ -56,14 +56,14 @@ fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> 
       )
       Text(
         text = if (card.status == Status.ACTIVE) {
-          stringResource(id = R.string.blocked)
+          stringResource(R.string.active_card)
         } else {
-          card.type
+          stringResource(id = R.string.blocked)
         },
         color = if (card.status == Status.ACTIVE) {
-          AppTheme.colors.indicatorContendError
-        } else {
           AppTheme.colors.textSecondary
+        } else {
+          AppTheme.colors.indicatorContendError
         },
         modifier = Modifier.padding(top = 3.dp),
         style = AppTheme.typography.caption1
@@ -85,20 +85,19 @@ fun CardProductListItem(card: CardEntity, onClickDetailsCard:(CardEntity.Id) -> 
   }
 }
 
-@Preview
-@Composable
-fun CardListItemPreview() {
-  CardProductListItem(
-    card = CardEntity(
-      cardId = CardEntity.Id("41"),
-      name = "Тинькофф платинум)))",
-      type = "Физическая",
-      paymentSystem = PaymentSystem.VISA,
-      number = "5413 4124 4123 4124",
-      status = Status.ACTIVE,
-      expiredAt = "02.04.2025",
-      accountId = "15135"
-    ),
-    onClickDetailsCard = {}
-  )
-}
+//@Preview
+//@Composable
+//fun CardListItemPreview() {
+//  CardProductListItem(
+//    card = CardEntity(
+////      accountId = "26",
+//      cardId = 31,
+//      name = "Тинькофф платинум)))",
+//      type = "Физическая",
+//      paymentSystem = PaymentSystem.Visa,
+//      number = "5413 4124 4123 4124",
+//      status = Status.ACTIVE
+//    ),
+//    onClickDetailsCard = {}
+//  )
+//}

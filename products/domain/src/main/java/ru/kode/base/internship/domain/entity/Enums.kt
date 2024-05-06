@@ -13,5 +13,6 @@ enum class Status {
 
 enum class PaymentSystem {
   MasterCard,
+  Visa,
   VISA
 }

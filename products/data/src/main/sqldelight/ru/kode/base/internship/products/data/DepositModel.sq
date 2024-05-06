@@ -25,3 +25,4 @@ INSERT OR REPLACE INTO DepositModel VALUES (?, ?, ?, ?, ?, ?, ?);
 
 insertDepositObject:
 INSERT OR REPLACE INTO DepositModel VALUES ?;
+

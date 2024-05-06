@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -42,9 +41,6 @@ import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 import ru.kode.base.internship.ui.effects.ShimmerEffect
 import ru.kode.base.internship.ui.error.LoadingErrorMessage
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -119,6 +115,7 @@ fun ProductsHomeScreen(
             BankAccountItem(
               bankAccount = bankAccount,
               onClickExpand = {cardListExpanded ->
+                Log.d("BANK_EXPAN", "$cardListExpanded")
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {

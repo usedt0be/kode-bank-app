@@ -1,7 +1,7 @@
 package ru.kode.base.internship.data.mapper
 
-import ru.kode.base.internship.data.network.entity.DepositByIdResponse
-import ru.kode.base.internship.data.network.entity.Deposit
+import ru.kode.base.internship.data.network.response.DepositByIdResponse
+import ru.kode.base.internship.data.network.response.Deposit
 import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.entity.DepositEntity
 import ru.kode.base.internship.domain.entity.Status
