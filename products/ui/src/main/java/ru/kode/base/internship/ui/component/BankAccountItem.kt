@@ -101,8 +101,6 @@ fun BankAccountItem(
 
     if (cardListExpanded) {
       bankAccount.cards.forEachIndexed { index, card ->
-        Log.d("EXP_CARDS", "$card")
-        Log.d("EXP_STATE", "$cardListExpanded")
         CardProductListItem(card = card, onClickDetailsCard = {
           onClickGetDetails(card.cardId)
         })
@@ -115,39 +113,39 @@ fun BankAccountItem(
 }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun BankAccountItemPreview() {
-//     BankAccountItem(
-//      bankAccount = BankAccountEntity(
-//        status = Status.ACTIVE,
-//        number = "4141",
-//        accountBalance = "457334.00",
-//        currency = Currency.RUB,
-//        accountId = "421",
-//        cards = listOf(
-//          CardEntity(
-////            accountId = "21",
-//            cardId = 51,
-//            name = "Карта зарплатная",
-//            type = "Физическая",
-//            number = "4124 4144 5135 5131",
-//            paymentSystem = PaymentSystem.MasterCard,
-//            status = Status.ACTIVE,
-//          ),
-//          CardEntity(
-////            accountId = "24",
-//            cardId = 58,
-//            name = "Карта зарплатная",
-//            type = "Физическая",
-//            number = "4124 4144 5135 5511",
-//            paymentSystem = PaymentSystem.Visa,
-//            status = Status.ACTIVE,
-//
-//          )
-//        ),
-//      ),
-//    onClickExpand = {} ,
-//   onClickGetDetails = {}
-//     )
-//}
+@Preview(showBackground = true)
+@Composable
+fun BankAccountItemPreview() {
+     BankAccountItem(
+      bankAccount = BankAccountEntity(
+        status = Status.ACTIVE,
+        number = "4141",
+        accountBalance = "457334.00",
+        currency = Currency.RUB,
+        accountId = "421",
+        cards = listOf(
+          CardEntity(
+            accountId = "21",
+            cardId = 51,
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5131",
+            paymentSystem = PaymentSystem.MasterCard,
+            status = Status.ACTIVE,
+
+          ),
+          CardEntity(
+            accountId = "24",
+            cardId = 58,
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5511",
+            paymentSystem = PaymentSystem.Visa,
+            status = Status.ACTIVE,
+          )
+        ),
+      ),
+    onClickExpand = {} ,
+   onClickGetDetails = {}
+     )
+}

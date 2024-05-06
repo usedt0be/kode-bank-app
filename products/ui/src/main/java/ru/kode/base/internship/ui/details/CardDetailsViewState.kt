@@ -11,11 +11,7 @@ import ru.kode.base.internship.domain.entity.Currency
 data class CardDetailsViewState(
   val cardState: LceState = LceState.None,
   val card: CardDetailsEntity = Mocks.defaultCardEntity,
-
   val enteredName: String = "",
-
-
   val balance: Balance = Balance(balance = "33", Currency.RUB),
-
   val showDialog: Boolean = false,
 )

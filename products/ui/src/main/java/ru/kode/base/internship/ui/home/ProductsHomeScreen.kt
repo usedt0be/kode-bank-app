@@ -181,8 +181,6 @@ fun ProductsHomeScreen(
           Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Log.d("bank_BTN_state_2", "$createButtonIsVisible")
-
         if (createButtonIsVisible) {
           item {
             CreateNewProductButton(onClickCreateProduct = { intents.createNewProduct() })

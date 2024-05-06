@@ -22,7 +22,6 @@ class CardDetailsViewModel @Inject constructor(
     onEach(intent(CardDetailsIntents::openCardDetails)) {
       action { _, _, cardId ->
         executeAsync {
-          Log.d("CARD_ID", "$cardId")
             productsUseCase.fetchCardDetails(cardId)
         }
       }

@@ -34,7 +34,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(productsUseCase.bankAccountsState) {
       transitionTo { state, bankAccountsState ->
-        Log.d("BANK_ACC_STATE", "$bankAccountsState")
         state.copy(
           bankAccountsState = bankAccountsState
         )
@@ -43,7 +42,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(productsUseCase.bankAccounts) {
       transitionTo { state, bankAccountsData ->
-        Log.d("BANK_ACC_DATA", "$bankAccountsData")
         state.copy(
           bankAccountsData = bankAccountsData
         )
@@ -52,7 +50,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(productsUseCase.depositsState) {
       transitionTo { state, depositsState ->
-        Log.d("BANK_DEP_STATE", "$depositsState")
         state.copy(
           depositsState = depositsState
         )
@@ -61,7 +58,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(productsUseCase.deposits) {
       transitionTo { state, depositsData ->
-        Log.d("BANK_DEP_DATA", "$depositsData")
         state.copy(
           depositsData = depositsData
         )
@@ -70,7 +66,6 @@ class ProductsHomeViewModel @Inject constructor(
 
     onEach(intent(ProductsHomeIntents::expandCards)) {
       transitionTo { state, bankAccount ->
-        Log.d("BANK_EXP_DATA", "$bankAccount")
         state.copy(
           accountsWithCards = state.accountsWithCards + bankAccount
         )

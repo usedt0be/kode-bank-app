@@ -48,7 +48,6 @@ class BankAccountsRepositoryImpl @Inject constructor(
     cardQueries.transaction {
       bankAccountEntityList.forEach { bankAccountEntity ->
         bankAccountEntity.cards.forEach { cardEntity ->
-          Log.d("CARD_ENTITY", "$cardEntity")
           cardQueries.insertCardModelObject(cardEntity.toCardModel())
         }
       }
@@ -65,17 +64,15 @@ class BankAccountsRepositoryImpl @Inject constructor(
 
     val cardsFlow = cardQueries.getAllCards().asFlow().mapToList(Dispatchers.IO).map { cardModels ->
       cardModels.map { cardModel ->
-        Log.d("CARD_MODEl", "$cardModel")
         cardModel.toCardEntity()
       }
     }.distinctUntilChanged()
 
     val bankEntityList = mutableListOf<BankAccountEntity>()
-   return bankAccountsFlow.combine(cardsFlow) { bankAccounts , cards ->
-      bankAccounts.forEach {bankAccount ->
+    return bankAccountsFlow.combine(cardsFlow) { bankAccounts, cards ->
+      bankAccounts.forEach { bankAccount ->
         val relatedCards = cards.filter { it.accountId == bankAccount.accountId }
 
-        Log.d("BANK_CARDS", "$bankAccount")
 
         val bankAccountEntity = BankAccountEntity(
           accountId = bankAccount.accountId,
@@ -87,37 +84,10 @@ class BankAccountsRepositoryImpl @Inject constructor(
         )
         bankEntityList.add(bankAccountEntity)
       }
-     bankEntityList
+      bankEntityList
     }
   }
 
-
-
-
-
-//  override fun getBankAccounts(): Flow<List<BankAccountEntity>> {
-//    val bankAccountsDb = bankAccountDataSource.getAccounts().distinctUntilChanged()
-//    val cardsDb = cardDataSource.getAllCards().distinctUntilChanged()
-//    val bankAccountList = mutableListOf<BankAccountEntity>()
-//
-//    return bankAccountsDb.combine(cardsDb) { bankAccounts, cards ->
-//      bankAccounts.forEach { bankAccount ->
-//        val relatedCards = cards.filter { it.accountId == bankAccount.id }.map { it.toCardEntity() }
-//
-//        val bankAccountEntity = BankAccountEntity(
-//          accountId = bankAccount.id.toString(),
-//          cards = relatedCards,
-//          status = Status.valueOf(bankAccount.status),
-//          number = bankAccount.number,
-//          accountBalance = bankAccount.balance,
-//          currency = Currency.valueOf(bankAccount.currency)
-//
-//        )
-//        bankAccountList.add(bankAccountEntity)
-//      }
-//      bankAccountList
-//    }
-//  }
 }
 
 

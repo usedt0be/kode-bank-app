@@ -85,19 +85,19 @@ fun CardProductListItem(card: CardEntity, onClickDetailsCard:(Long) -> Unit) {
   }
 }
 
-//@Preview
-//@Composable
-//fun CardListItemPreview() {
-//  CardProductListItem(
-//    card = CardEntity(
-////      accountId = "26",
-//      cardId = 31,
-//      name = "Тинькофф платинум)))",
-//      type = "Физическая",
-//      paymentSystem = PaymentSystem.Visa,
-//      number = "5413 4124 4123 4124",
-//      status = Status.ACTIVE
-//    ),
-//    onClickDetailsCard = {}
-//  )
-//}
+@Preview
+@Composable
+fun CardListItemPreview() {
+  CardProductListItem(
+    card = CardEntity(
+      accountId = "26",
+      cardId = 31,
+      name = "Тинькофф платинум)))",
+      type = "Физическая",
+      paymentSystem = PaymentSystem.Visa,
+      number = "5413 4124 4123 4124",
+      status = Status.ACTIVE
+    ),
+    onClickDetailsCard = {}
+  )
+}
