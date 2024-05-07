@@ -9,6 +9,7 @@ import ru.kode.base.core.di.AppScope
 import ru.kode.base.core.di.SingleIn
 import ru.kode.base.internship.core.domain.BaseUseCase
 import ru.kode.base.internship.core.domain.entity.LceState
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
 import ru.kode.base.internship.domain.repository.BankAccountRepository
 import ru.kode.base.internship.domain.repository.CardRepository
 import ru.kode.base.internship.domain.repository.DepositRepository
@@ -40,7 +41,7 @@ class ProductsUseCase @Inject constructor(
     }
   }
 
-  val bankAccounts = bankAccountRepository.getBankAccounts().distinctUntilChanged()
+  val bankAccounts = bankAccountRepository.getBankAccounts()
 
   val bankAccountsState: Flow<LceState> = stateFlow.map { it.bankAccountsState }.distinctUntilChanged()
 
@@ -53,7 +54,7 @@ class ProductsUseCase @Inject constructor(
         depositsRepository.getDepositsFromDb()
       }
     } catch (e: Exception) {
-      setState { copy(depositsState = LceState.Error("Failed to load deposits")) }
+      setState { copy(depositsState = LceState.Error("Failed to load deposits"))}
       throw e
     }
   }
@@ -63,15 +64,22 @@ class ProductsUseCase @Inject constructor(
   val depositsState: Flow<LceState> = stateFlow.map { it.depositsState }.distinctUntilChanged()
 
   suspend fun fetchCardDetails(cardId: String) {
+    setState { copy(cardsState = LceState.Loading) }
+    try {
       cardRepository.fetchCardDetails()
+      setState { copy(cardsState = LceState.Content) }
       cardRepository.getCardDetails(cardId)
       cardRepository.fetchBankAccountBalance()
+
+    }catch (e:Exception) {
+      setState { copy(cardsState = LceState.Error("Failed to load Cards")) }
+    }
   }
-  suspend fun renameCard(id:String, newName:String) {
+  suspend fun renameCard(id:CardDetailsEntity.Id, newName:String) {
     cardRepository.renameCard(id, newName)
   }
 
-  val card = cardRepository.cardFlow
+  val card = cardRepository.cardFlow.distinctUntilChanged()
 
   val cardState: Flow<LceState> = stateFlow.map { it.cardsState }.distinctUntilChanged()
 

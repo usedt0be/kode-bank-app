@@ -38,7 +38,7 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 fun BankAccountItem(
   bankAccount: BankAccountEntity,
   onClickExpand: (Boolean) -> Unit,
-  onClickGetDetails:(Long)-> Unit,
+  onClickGetDetails:(CardEntity.Id)-> Unit,
 ) {
   var cardListExpanded by remember { mutableStateOf(false) }
 
@@ -113,39 +113,39 @@ fun BankAccountItem(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun BankAccountItemPreview() {
-     BankAccountItem(
-      bankAccount = BankAccountEntity(
-        status = Status.ACTIVE,
-        number = "4141",
-        accountBalance = "457334.00",
-        currency = Currency.RUB,
-        accountId = "421",
-        cards = listOf(
-          CardEntity(
-            accountId = "21",
-            cardId = 51,
-            name = "Карта зарплатная",
-            type = "Физическая",
-            number = "4124 4144 5135 5131",
-            paymentSystem = PaymentSystem.MasterCard,
-            status = Status.ACTIVE,
-
-          ),
-          CardEntity(
-            accountId = "24",
-            cardId = 58,
-            name = "Карта зарплатная",
-            type = "Физическая",
-            number = "4124 4144 5135 5511",
-            paymentSystem = PaymentSystem.Visa,
-            status = Status.ACTIVE,
-          )
-        ),
-      ),
-    onClickExpand = {} ,
-   onClickGetDetails = {}
-     )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun BankAccountItemPreview() {
+//     BankAccountItem(
+//      bankAccount = BankAccountEntity(
+//        status = Status.ACTIVE,
+//        number = "4141",
+//        accountBalance = "457334.00",
+//        currency = Currency.RUB,
+//        accountId = "421",
+//        cards = listOf(
+//          CardEntity(
+//            accountId = "21",
+//            cardId = 51,
+//            name = "Карта зарплатная",
+//            type = "Физическая",
+//            number = "4124 4144 5135 5131",
+//            paymentSystem = PaymentSystem.MasterCard,
+//            status = Status.ACTIVE,
+//
+//          ),
+//          CardEntity(
+//            accountId = "24",
+//            cardId = 58,
+//            name = "Карта зарплатная",
+//            type = "Физическая",
+//            number = "4124 4144 5135 5511",
+//            paymentSystem = PaymentSystem.Visa,
+//            status = Status.ACTIVE,
+//          )
+//        ),
+//      ),
+//    onClickExpand = {} ,
+//   onClickGetDetails = {}
+//     )
+//}

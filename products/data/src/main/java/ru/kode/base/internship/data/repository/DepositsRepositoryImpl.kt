@@ -38,7 +38,6 @@ class DepositsRepositoryImpl @Inject constructor(
       }
 
       val depositsSM = depositList.map { it.toDepositModel() }
-
       depositQueries.transaction {
         depositsSM.forEach { deposit ->
           depositQueries.insertDepositObject(

@@ -44,7 +44,7 @@ object AppFlow : GraphFlow() {
 
         FlowEvent.BackToHomeScreen ->navController.navigate(ScreenRoute.ProductsHome.route)
 
-        is FlowEvent.OpenCardDetails -> navController.navigate(ScreenRoute.CardDetails.route + "/${event.cardId}")
+        is FlowEvent.OpenCardDetails -> navController.navigate(ScreenRoute.CardDetails.route + "/${event.cardId.value}")
       }
     }
   }

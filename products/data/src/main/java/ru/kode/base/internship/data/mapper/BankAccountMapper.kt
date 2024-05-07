@@ -7,22 +7,6 @@ import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.data.BankAccountModel
 
 
-//fun bankAccountMapper(
-//  bankAccount: BankAccount,
-//  cardByIdResponse: CardByIdResponse,
-//): BankAccountEntity {
-//
-//  return BankAccountEntity(
-//    accountId = bankAccount.accountId.toString(),
-//    cards = bankAccount.cards.map {card->
-//      cardEntityMapper(cardResponse = card, cardByIdResponse = cardByIdResponse)
-//    },
-//    status = Status.valueOf(bankAccount.status),
-//    number = bankAccount.number,
-//    accountBalance = bankAccount.balance.toString(),
-//    currency = Currency.valueOf(bankAccount.currency)
-//  )
-//}
 
 internal fun BankAccountEntity.toBankAccountModel(): BankAccountModel {
   return BankAccountModel(

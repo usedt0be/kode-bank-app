@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.cardUiMapper
 import ru.kode.base.internship.ui.component.CardDetailsItem
@@ -28,6 +29,7 @@ import ru.kode.base.internship.ui.component.CustomTopAppBar
 import ru.kode.base.internship.ui.component.RenameDialog
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import ru.kode.base.internship.ui.effects.ShimmerCard
 
 val actions = listOf(
   mapOf(R.drawable.ic_rename_card to "Переименовать карту"),
@@ -79,7 +81,11 @@ fun CardDetailsScreen(
       modifier = Modifier.fillMaxWidth(),
       contentAlignment = Alignment.Center
     ) {
-      CardDetailsItem(card = card)
+      if(state.cardState == LceState.Loading) {
+        ShimmerCard()
+      } else {
+        CardDetailsItem(card = card)
+      }
     }
 
     Spacer(modifier = Modifier.height(40.dp))

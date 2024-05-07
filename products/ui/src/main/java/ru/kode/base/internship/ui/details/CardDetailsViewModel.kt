@@ -76,7 +76,7 @@ class CardDetailsViewModel @Inject constructor(
       }
       action { state, newState, newName ->
         executeAsync {
-          productsUseCase.renameCard(newState.card.cardId.toString(), newName)
+          productsUseCase.renameCard(newState.card.cardId, newName)
         }
       }
     }

@@ -6,7 +6,6 @@ import com.squareup.anvil.annotations.ContributesBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.internship.data.Mocks
 import ru.kode.base.internship.data.mapper.cardEntityMapper
@@ -34,11 +33,9 @@ class CardsRepositoryImpl @Inject constructor(
   private val cardDetailsQueries = db.cardDetailsModelQueries
 
 
-
   override suspend fun fetchCardDetails() {
     val bankAccountsResponse = api.getBankAccounts()
     val cardsList = mutableListOf<CardDetailsEntity>()
-
     bankAccountsResponse.accounts.forEach { bankAccount ->
       bankAccount.cards.forEach { card ->
         val cardById = api.getCardById(card.card_id.toInt())
@@ -60,11 +57,25 @@ class CardsRepositoryImpl @Inject constructor(
     val cardDetails = cardDetailsQueries.getCardById(id.toLong()).executeAsOne()
     val card = cardQueries.getCardsById(id.toLong()).executeAsOne()
     val cardDetailsEntity = cardModelToEntityMapper(card, cardDetails)
-    cardFlow.update { cardDetailsEntity }
+    cardFlow.value = cardDetailsEntity
   }
 
-  override suspend fun renameCard(id: String, newName: String) {
-    api.renameCard(id, CardNameRequest(newName = newName))
+  override suspend fun renameCard(id: CardDetailsEntity.Id, newName: String) {
+    api.renameCard(id.toString(), CardNameRequest(newName = newName))
+    val renamedCardDetails = cardDetailsQueries.getCardById(id.value.toLong()).executeAsOne().copy(
+      name = newName
+    )
+    val renamedCard = cardQueries.getCardsById(id.value.toLong()).executeAsOne().copy(
+      name = newName
+    )
+    cardDetailsQueries.transaction {
+      cardDetailsQueries.insertCardObject(renamedCardDetails)
+    }
+    cardQueries.transaction {
+      cardQueries.insertCardModelObject(renamedCard)
+    }
+    val cardDetailsEntity = cardModelToEntityMapper(renamedCard, renamedCardDetails)
+    cardFlow.value = cardDetailsEntity
   }
 
   val _balance = MutableStateFlow(Balance("41",Currency.RUB))

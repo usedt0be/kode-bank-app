@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
+import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.usecase.ProductsUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject

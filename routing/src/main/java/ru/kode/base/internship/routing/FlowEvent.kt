@@ -1,6 +1,7 @@
 package ru.kode.base.internship.routing
 
 import ru.kode.base.internship.domain.entity.CardDetailsEntity
+import ru.kode.base.internship.domain.entity.CardEntity
 
 sealed class FlowEvent {
   data object UserIdentificationDismissed : FlowEvent()
@@ -12,5 +13,5 @@ sealed class FlowEvent {
 
   data object BackToHomeScreen: FlowEvent()
 
-  data class OpenCardDetails(val cardId: Long) : FlowEvent()
+  data class OpenCardDetails(val cardId: CardEntity.Id) : FlowEvent()
 }

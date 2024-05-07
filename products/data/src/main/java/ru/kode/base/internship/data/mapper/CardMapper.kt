@@ -45,7 +45,7 @@ internal fun cardModelToEntityMapper(
 
 internal fun CardResponse.toCardEntity(accountId: Int) : CardEntity {
   return CardEntity(
-    cardId = card_id.toLong(),
+    cardId = CardEntity.Id(card_id),
     name = name,
     number = number,
     paymentSystem = PaymentSystem.valueOf(payment_system),
@@ -69,7 +69,7 @@ fun CardDetailsEntity.toCardDetailsModel(): CardDetailsModel {
 
 fun CardModel.toCardEntity(): CardEntity {
   return CardEntity(
-    cardId = id,
+    cardId = CardEntity.Id(id.toString()),
     name = name,
     number = number,
     paymentSystem = PaymentSystem.valueOf(paymentSystem),
@@ -82,7 +82,7 @@ fun CardModel.toCardEntity(): CardEntity {
 
 internal fun CardEntity.toCardModel(): CardModel {
   return CardModel(
-    id = cardId,
+    id = cardId.value.toLong(),
     name = name,
     number = number,
     paymentSystem = paymentSystem.toString(),
