@@ -1,0 +1,28 @@
+plugins {
+  id "android-library-convention"
+  id "dagger-convention"
+  id "android-compose-convention"
+  alias(libs.plugins.sqldelight)
+  alias(libs.plugins.kotlinx.serialization)
+}
+
+android {
+  namespace 'ru.kode.base.internship.data'
+}
+
+sqldelight {
+  databases {
+    ProductsDB {
+      packageName = "ru.kode.base.internship.products.data"
+      srcDirs('src/main/sqldelight')
+    }
+  }
+}
+
+dependencies {
+  implementation project(":core")
+  api project(":core:data")
+  api project(":products:domain")
+
+  implementation libs.sqldelight.android.driver
+}

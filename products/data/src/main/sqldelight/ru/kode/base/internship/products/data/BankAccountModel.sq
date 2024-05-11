@@ -1,0 +1,23 @@
+CREATE TABLE BankAccountModel(
+    id INTEGER NOT NULL PRIMARY KEY,
+    status TEXT NOT NULL,
+    number TEXT NOT NULL,
+    balance TEXT NOT NULL,
+    currency TEXT NOT NULL
+);
+
+
+getAllBankAccounts:
+SELECT * FROM BankAccountModel;
+
+getBankAccountById:
+SELECT * FROM BankAccountModel WHERE id = :id;
+
+insertBankAccount:
+INSERT OR REPLACE INTO
+BankAccountModel(id, status, number, balance, currency)
+VALUES(?, ?, ?, ?, ? );
+
+insertBankAccountObject:
+INSERT OR REPLACE INTO BankAccountModel(id, status, number, balance, currency) VALUES ?;
+

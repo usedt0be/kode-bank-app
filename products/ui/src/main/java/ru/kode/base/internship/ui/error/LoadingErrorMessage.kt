@@ -18,33 +18,32 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun LoadingErrorMessage(onClickRefreshFailed:() -> Unit) {
+fun LoadingErrorMessage(onClickRefreshFailed: () -> Unit) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
     modifier = Modifier
       .fillMaxWidth()
-      .height(173.dp)
+      .height(172.dp)
   ) {
     Text(
-      text = stringResource(id = R.string.something_went_wrong),
+      text = stringResource(id = R.string.something_went_wrong, "somethingWentWrong"),
       style = AppTheme.typography.bodySemibold
     )
 
     Text(
-      text = stringResource(id = R.string.cant_load_content),
+      text = stringResource(id = R.string.cant_load_content, "failedToLoadSomeContent"),
       style = AppTheme.typography.body2,
       modifier = Modifier.padding(4.dp),
       textAlign = TextAlign.Center
     )
 
     Text(
-      text = stringResource(id = R.string.update_data),
+      text = stringResource(id = R.string.update_data, "update"),
       style = AppTheme.typography.bodySemibold,
       color = AppTheme.colors.contendAccentPrimary,
       modifier = Modifier.clickable { onClickRefreshFailed() }
     )
-
   }
 }
 

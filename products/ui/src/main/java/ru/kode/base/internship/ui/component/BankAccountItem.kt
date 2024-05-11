@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,25 +13,37 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.BankAccountEntity
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
+import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.entity.Currency
+import ru.kode.base.internship.domain.entity.PaymentSystem
+import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import ru.kode.base.internship.ui.home.BankAccount
-import ru.kode.base.internship.ui.home.Card
-import ru.kode.base.internship.ui.home.ProductsHomeIntents
-
 
 @Composable
-fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
-  val cards = bankAccount.cards
-  val cardListExpanded = remember { mutableStateOf(false) }
+fun BankAccountItem(
+  bankAccount: BankAccountEntity,
+  onClickExpand: (Boolean) -> Unit,
+  onClickGetDetails:(CardEntity.Id)-> Unit,
+) {
+  var cardListExpanded by remember { mutableStateOf(false) }
+
+  val balance = Balance(bankAccount.accountBalance, bankAccount.currency).format()
+
   Column(modifier = Modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier
@@ -39,14 +52,13 @@ fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
         .background(color = AppTheme.colors.backgroundSecondary),
       verticalAlignment = Alignment.CenterVertically
     ) {
-
       Icon(
-        painter = when(bankAccount.currency) {
-          "RUB" -> painterResource(id = R.drawable.ic_rub)
-          "USD" -> painterResource(id = R.drawable.ic_usd)
+        painter = when (bankAccount.currency) {
+          Currency.RUB -> painterResource(id = R.drawable.ic_rub)
+          Currency.USD -> painterResource(id = R.drawable.ic_usd)
           else -> painterResource(id = R.drawable.ic_eur)
         },
-        contentDescription ="Russian ruble icon",
+        contentDescription = stringResource(id = R.string.currency_icon_description),
         modifier = Modifier.padding(start = 16.dp),
         tint = Color.Unspecified
       )
@@ -55,12 +67,12 @@ fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
 
       Column(modifier = Modifier) {
         Text(
-          text = bankAccount.description,
+          text = stringResource(R.string.bank_account_name),
           modifier = Modifier,
           style = AppTheme.typography.body2
         )
         Text(
-          text = bankAccount.accountBalance,
+          text = balance,
           modifier = Modifier,
           style = AppTheme.typography.body2,
           color = AppTheme.colors.contendAccentPrimary
@@ -71,54 +83,69 @@ fun BankAccountItem(bankAccount: BankAccount, intents: ProductsHomeIntents) {
 
       IconButton(
         onClick = {
-          cardListExpanded.value = !cardListExpanded.value
+          cardListExpanded = !cardListExpanded
+          onClickExpand(cardListExpanded)
         },
-       modifier = Modifier.padding(end = 16.dp),
+        modifier = Modifier.padding(end = 16.dp),
       ) {
         Icon(
-          if(cardListExpanded.value) painterResource(id = R.drawable.expand_button_expanded)
-          else painterResource(id = R.drawable.expand_button_unexpanded),
-          contentDescription = "Expand Button",
+          if (cardListExpanded)
+            painterResource(id = R.drawable.expand_button_expanded)
+          else
+            painterResource(id = R.drawable.expand_button_unexpanded),
+          contentDescription = stringResource(id = R.string.expand_icon_description),
           tint = Color.Unspecified
         )
       }
     }
 
-    if(cardListExpanded.value) {
-      for (card in cards) {
-        CardItem(card = card, onClickCheckCard = {intents.checkCard()})
+    if (cardListExpanded) {
+      bankAccount.cards.forEachIndexed { index, card ->
+        CardProductListItem(card = card, onClickDetailsCard = {
+          onClickGetDetails(card.cardId)
+        })
+        if (index != bankAccount.cards.lastIndex) {
+          CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+        }
       }
     }
   }
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun BankAccountItemPreview() {
-  val intents = ProductsHomeIntents()
-  BankAccountItem(
-    bankAccount = BankAccount(
-      description = "Счет расчетный",
-      accountBalance = "457334.00",
-      currency = "RUB",
-      accountId = "421",
-      cards = listOf(
-        Card(
-          description = "Карта зарплатная",
-          type = "Физическая",
-          number = "4124 4144 5135 5131",
-          paymentSystem = "MasterCard",
-          isBlocked = false
-        ),
-        Card(
-          description = "Дополнительная карта",
-          type = "Физическая",
-          number = "4124 4144 5135 5511",
-          paymentSystem = "Visa",
-          isBlocked = true
-        )
-      ),
-    ), intents
-  )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun BankAccountItemPreview() {
+//     BankAccountItem(
+//      bankAccount = BankAccountEntity(
+//        status = Status.ACTIVE,
+//        number = "4141",
+//        accountBalance = "457334.00",
+//        currency = Currency.RUB,
+//        accountId = "421",
+//        cards = listOf(
+//          CardEntity(
+//            accountId = "21",
+//            cardId = 51,
+//            name = "Карта зарплатная",
+//            type = "Физическая",
+//            number = "4124 4144 5135 5131",
+//            paymentSystem = PaymentSystem.MasterCard,
+//            status = Status.ACTIVE,
+//
+//          ),
+//          CardEntity(
+//            accountId = "24",
+//            cardId = 58,
+//            name = "Карта зарплатная",
+//            type = "Физическая",
+//            number = "4124 4144 5135 5511",
+//            paymentSystem = PaymentSystem.Visa,
+//            status = Status.ACTIVE,
+//          )
+//        ),
+//      ),
+//    onClickExpand = {} ,
+//   onClickGetDetails = {}
+//     )
+//}
