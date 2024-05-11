@@ -1,5 +1,6 @@
 package ru.kode.base.internship.data.repository
 
+import android.util.Log
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
@@ -7,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.internship.data.mapper.toBankAccountEntity
@@ -50,8 +52,7 @@ class BankAccountsRepositoryImpl @Inject constructor(
   }
 
   override fun getBankAccounts(): Flow<List<BankAccountEntity>> {
-    val bankAccountsFlow =
-      bankAccountQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO).map { bankAccounts ->
+    val bankAccountsFlow = bankAccountQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO).map { bankAccounts ->
         bankAccounts.map { bankAccountModel ->
           bankAccountModel.toBankAccountEntity()
         }
@@ -63,23 +64,14 @@ class BankAccountsRepositoryImpl @Inject constructor(
       }
     }.distinctUntilChanged()
 
-    val bankEntityList = mutableListOf<BankAccountEntity>()
-      return bankAccountsFlow.combine(cardsFlow) { bankAccounts, cards ->
-      bankAccounts.forEach { bankAccount ->
-        val relatedCards = cards.filter { it.accountId == bankAccount.accountId }
-
-        val bankAccountEntity = BankAccountEntity(
-          accountId = bankAccount.accountId,
-          cards = relatedCards,
-          status = Status.valueOf(bankAccount.status.toString()),
-          number = bankAccount.number,
-          accountBalance = bankAccount.accountBalance,
-          currency = Currency.valueOf(bankAccount.currency.toString())
+    val combinedFlow = bankAccountsFlow.combine(cardsFlow) {bankAccountEntities, cardEntities ->
+      bankAccountEntities.map {bankAccountEntity ->
+        bankAccountEntity.copy(
+          cards = cardEntities.filter { bankAccountEntity.accountId == it.accountId }
         )
-        bankEntityList.add(bankAccountEntity)
       }
-      bankEntityList
     }
+    return combinedFlow
   }
 }
 

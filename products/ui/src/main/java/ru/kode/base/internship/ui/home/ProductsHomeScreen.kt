@@ -50,6 +50,8 @@ fun ProductsHomeScreen(
   viewModel = viewModel,
   intents = rememberViewIntents()
 ) { state, intents ->
+
+
   val bankAccounts = state.bankAccountsData
   val deposits = state.depositsData
 
@@ -115,7 +117,6 @@ fun ProductsHomeScreen(
             BankAccountItem(
               bankAccount = bankAccount,
               onClickExpand = {cardListExpanded ->
-                Log.d("BANK_EXPAN", "$cardListExpanded")
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {

@@ -3,6 +3,7 @@ package ru.kode.base.internship.domain.usecase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.kode.base.core.di.AppScope
@@ -41,7 +42,8 @@ class ProductsUseCase @Inject constructor(
     }
   }
 
-  val bankAccounts = bankAccountRepository.getBankAccounts()
+  val bankAccounts = bankAccountRepository.getBankAccounts().distinctUntilChanged()
+
 
   val bankAccountsState: Flow<LceState> = stateFlow.map { it.bankAccountsState }.distinctUntilChanged()
 

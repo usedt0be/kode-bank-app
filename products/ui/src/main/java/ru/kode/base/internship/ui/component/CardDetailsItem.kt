@@ -36,8 +36,6 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun CardDetailsItem(card: CardEntityUi) {
-
-
   Card(
     modifier = Modifier
       .size(height = 160.dp, width = 272.dp)

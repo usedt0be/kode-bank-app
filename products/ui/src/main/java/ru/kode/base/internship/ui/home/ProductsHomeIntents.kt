@@ -11,6 +11,5 @@ class ProductsHomeIntents : BaseViewIntents() {
   val createNewProduct = intent(name = "CreateNewProduct")
   val hideCards = intent<BankAccountEntity>(name = "expandCards")
   val expandCards = intent<BankAccountEntity>(name = "expandCards")
-
   val getCardDetails = intent<CardEntity.Id>(name = "getCards")
 }
