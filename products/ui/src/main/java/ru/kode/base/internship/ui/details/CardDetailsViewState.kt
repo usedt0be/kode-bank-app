@@ -3,18 +3,15 @@ package ru.kode.base.internship.ui.details
 import androidx.compose.runtime.Immutable
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.data.Mocks
-import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
+import ru.kode.base.internship.domain.entity.Currency
 
 @Immutable
 data class CardDetailsViewState(
   val cardState: LceState = LceState.None,
-  val card: CardEntity = Mocks.defaultCardEntity,
-
-
+  val card: CardDetailsEntity = Mocks.defaultCardEntity,
   val enteredName: String = "",
-
-  val bankAccountBalanceState: LceState = LceState.None,
-  val bankAccountBalance: String = "88",
-
-  val dialogOpened: Boolean = false,
+  val balance: Balance = Balance(balance = "33", Currency.RUB),
+  val showDialog: Boolean = false,
 )

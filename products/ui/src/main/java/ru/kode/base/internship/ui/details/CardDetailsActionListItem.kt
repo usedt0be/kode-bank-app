@@ -1,4 +1,4 @@
-package ru.kode.base.internship.ui.component
+package ru.kode.base.internship.ui.details
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,11 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 
 @Composable
-fun CardDetailsActionListItem(onClickCardAction:(String) -> Unit, iconId: Int, actionName: String) {
+fun CardActionListItem(
+  onClickCardAction:(String) -> Unit,
+  iconResId: Int,
+  actionName: String
+) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -31,7 +35,7 @@ fun CardDetailsActionListItem(onClickCardAction:(String) -> Unit, iconId: Int, a
   )
   {
     Icon(
-      painter = painterResource(id = iconId) ,
+      painter = painterResource(id = iconResId) ,
       contentDescription = "",
       modifier = Modifier.alignByBaseline()
     )
@@ -50,9 +54,9 @@ fun CardDetailsActionListItem(onClickCardAction:(String) -> Unit, iconId: Int, a
 @Preview
 @Composable
 fun CardActionItemPreview() {
-  CardDetailsActionListItem(
+  CardActionListItem(
     onClickCardAction = {},
-    iconId =R.drawable.ic_rename_card,
+    iconResId =R.drawable.ic_rename_card,
     "Переименовать карту"
   )
 }

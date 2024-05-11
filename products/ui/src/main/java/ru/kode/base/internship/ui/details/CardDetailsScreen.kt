@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.details
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.kode.base.core.rememberViewIntents
 import ru.kode.base.core.viewmodel.daggerViewModel
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.R
-import ru.kode.base.internship.ui.component.CardDetailsActionListItem
-import ru.kode.base.internship.ui.component.CardDetailsActionRow
+import ru.kode.base.internship.ui.cardUiMapper
 import ru.kode.base.internship.ui.component.CardDetailsItem
 import ru.kode.base.internship.ui.component.CustomTopAppBar
 import ru.kode.base.internship.ui.component.RenameDialog
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
+import ru.kode.base.internship.ui.effects.ShimmerCard
 
 val actions = listOf(
   mapOf(R.drawable.ic_rename_card to "Переименовать карту"),
@@ -44,31 +46,25 @@ fun CardDetailsScreen(
   viewModel: CardDetailsViewModel = daggerViewModel(),
 ) = AppScreen(viewModel = viewModel, intents = rememberViewIntents()) { state, intents ->
 
+  val card = cardUiMapper(state.balance, state.card)
 
   LaunchedEffect(key1 = cardId) {
     if (cardId != null) {
-      intents.getCardById(cardId)
+      intents.openCardDetails(cardId)
     }
   }
 
-
-  if(state.dialogOpened) {
+  if(state.showDialog) {
     RenameDialog(
-      changeText = { enteredName ->
-        intents.renameCard(enteredName)
+      onConfirm = { newName ->
+        intents.confirm(newName)
+        intents.dismissDialog()
       },
-      enteredName = state.enteredName,
-      onClickConfirm = {closeDialog ->
-        intents.confirmRename()
-        intents.openOrCloseDialog(closeDialog)
-      },
-      onClickDismiss = { closeDialog, clearTextField ->
-        intents.openOrCloseDialog(closeDialog)
-        intents.renameCard(clearTextField)
+      onDismiss = {
+        intents.dismissDialog()
       }
     )
   }
-
 
   Column(
     modifier = Modifier
@@ -79,18 +75,22 @@ fun CardDetailsScreen(
       .imePadding()
   )
   {
-    CustomTopAppBar(onClickNavigateOnBack = { intents.navigateOnBack() })
+    CustomTopAppBar(onNavigateBackClick = { intents.navigateOnBack() })
 
     Box(
       modifier = Modifier.fillMaxWidth(),
       contentAlignment = Alignment.Center
     ) {
-      CardDetailsItem(card = state.card, balance = state.bankAccountBalance)
+      if(state.cardState == LceState.Loading) {
+        ShimmerCard()
+      } else {
+        CardDetailsItem(card = card)
+      }
     }
 
     Spacer(modifier = Modifier.height(40.dp))
 
-    CardDetailsActionRow()
+    CardActionRow()
 
 
     Column(
@@ -103,11 +103,11 @@ fun CardDetailsScreen(
     ) {
       actions.forEachIndexed { index, map ->
         map.onEach {
-          CardDetailsActionListItem(onClickCardAction = { actionName ->
+          CardActionListItem(onClickCardAction = { actionName ->
             when(actionName) {
-               "Переименовать карту" -> intents.openOrCloseDialog(true)
+               "Переименовать карту" -> intents.openDialog()
             }
-          }, iconId = it.key, actionName = it.value)
+          }, iconResId = it.key, actionName = it.value)
         }
         if (index < actions.lastIndex) {
           Divider(

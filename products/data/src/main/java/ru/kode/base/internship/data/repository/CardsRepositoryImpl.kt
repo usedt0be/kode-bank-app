@@ -1,38 +1,100 @@
 package ru.kode.base.internship.data.repository
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.internship.data.Mocks
-import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.data.mapper.cardEntityMapper
+import ru.kode.base.internship.data.mapper.cardModelToEntityMapper
+import ru.kode.base.internship.data.mapper.toCardDetailsModel
+import ru.kode.base.internship.data.network.ProductApi
+import ru.kode.base.internship.data.network.request.CardNameRequest
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
+import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.repository.CardRepository
+import ru.kode.base.internship.products.data.ProductsDB
 import javax.inject.Inject
 
 @ContributesBinding(AppScope::class)
-class CardsRepositoryImpl @Inject constructor() : CardRepository {
+class CardsRepositoryImpl @Inject constructor(
+  private val db: ProductsDB,
+  private val api: ProductApi,
+) : CardRepository {
 
-  override val card = MutableStateFlow<CardEntity>(Mocks.defaultCardEntity)
+  override val cardFlow = MutableStateFlow(Mocks.defaultCardEntity)
 
-  override suspend fun fetchCardDetails(id: String) {
-    val cards = Mocks.getCardMocks()
-    card.update { cards.find { it.cardId.value == id }!! }
-  }
+  private val cardQueries = db.cardModelQueries
+  private val bankQueries = db.bankAccountModelQueries
+  private val cardDetailsQueries = db.cardDetailsModelQueries
 
-  override val bankAccountBalance = MutableStateFlow<String>("")
 
-  override fun renameCard(cardId: CardEntity.Id, newName: String) {
-    val renamedCard = Mocks.renameCard(cardId,newName)
-    card.update { renamedCard }
-  }
+  override suspend fun fetchCardDetails() {
+    val bankAccountsResponse = api.getBankAccounts()
+    val cardsList = mutableListOf<CardDetailsEntity>()
+    bankAccountsResponse.accounts.forEach { bankAccount ->
+      bankAccount.cards.forEach { card ->
+        val cardById = api.getCardById(card.card_id.toInt())
 
-  override fun fetchBankAccountBalance() {
-    val bankAccounts = Mocks.getBankAccountsMocks()
-    bankAccountBalance.update {
-      bankAccounts.find { bankAccount ->
-        bankAccount.accountId == card.value.accountId
-      }?.accountBalance!!
+        cardsList.add(cardEntityMapper(card, cardById))
+      }
+    }
+
+    val cardsSM = cardsList.map { it.toCardDetailsModel() }
+
+    cardDetailsQueries.transaction {
+      cardsSM.forEach { cardModel ->
+        cardDetailsQueries.insertCardObject(cardModel)
+      }
     }
   }
 
+  override suspend fun getCardDetails(id: String) {
+    val cardDetails = cardDetailsQueries.getCardById(id.toLong()).executeAsOne()
+    val card = cardQueries.getCardsById(id.toLong()).executeAsOne()
+    val cardDetailsEntity = cardModelToEntityMapper(card, cardDetails)
+    cardFlow.value = cardDetailsEntity
+  }
+
+  override suspend fun renameCard(id: CardDetailsEntity.Id, newName: String) {
+    api.renameCard(id.toString(), CardNameRequest(newName = newName))
+    val renamedCardDetails = cardDetailsQueries.getCardById(id.value.toLong()).executeAsOne().copy(
+      name = newName
+    )
+    val renamedCard = cardQueries.getCardsById(id.value.toLong()).executeAsOne().copy(
+      name = newName
+    )
+    cardDetailsQueries.transaction {
+      cardDetailsQueries.insertCardObject(renamedCardDetails)
+    }
+    cardQueries.transaction {
+      cardQueries.insertCardModelObject(renamedCard)
+    }
+    val cardDetailsEntity = cardModelToEntityMapper(renamedCard, renamedCardDetails)
+    cardFlow.value = cardDetailsEntity
+  }
+
+  val _balance = MutableStateFlow(Balance("41",Currency.RUB))
+  override val balance: Flow<Balance>
+    get() = _balance
+
+  override suspend fun fetchBankAccountBalance() {
+    val bankAccountModelsList = bankQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO)
+    bankAccountModelsList.collect { bankAccountModelList ->
+       val balance = bankAccountModelList.find { bankAccountModel ->
+         bankAccountModel.id.toString() == cardFlow.value.accountId
+      }?.balance
+      val currency = bankAccountModelList.find { bankAccountModel ->
+        bankAccountModel.id.toString() == cardFlow.value.accountId
+      }?.currency
+
+      if (balance != null && currency !=null) {
+        _balance.value = Balance(balance, Currency.valueOf(currency))
+      }
+    }
+  }
 }

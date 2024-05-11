@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,15 +35,15 @@ import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
 fun RenameDialog(
-  changeText: (String) -> Unit,
-  enteredName: String,
-  onClickConfirm: (Boolean) -> Unit,
-  onClickDismiss: (Boolean, String) -> Unit,
+  onConfirm: (String) -> Unit,
+  onDismiss: () -> Unit,
   )
 {
-  var cardName by rememberSaveable { mutableStateOf(enteredName) }
+  var cardName by rememberSaveable { mutableStateOf("") }
+  Log.d("Card_name", "$cardName")
 
-  Dialog(onDismissRequest = { onClickDismiss(false, "") }) {
+
+  Dialog(onDismissRequest = {  }) {
     Column(
       modifier = Modifier
         .clip(RoundedCornerShape(8.dp))
@@ -59,15 +60,13 @@ fun RenameDialog(
           .padding(top = 8.dp)
       ) {
         Text(
-          text = "Введите новое название"
+          text = stringResource(R.string.write_new_name)
         )
       }
       TextField(
-        value = enteredName,
-        onValueChange =  { text ->
-                         cardName = text
-          changeText(text)
-
+        value = cardName,
+        onValueChange = { text ->
+          cardName = text
         },
         colors = TextFieldDefaults.textFieldColors(
           backgroundColor = AppTheme.colors.backgroundSecondary,
@@ -80,7 +79,7 @@ fun RenameDialog(
         textStyle = AppTheme.typography.bodyMedium,
         modifier = Modifier.fillMaxHeight(0.5f)
       )
-      
+
 
       Divider(
         modifier = Modifier
@@ -103,7 +102,10 @@ fun RenameDialog(
           text = stringResource(R.string.cancel_rename_button_text),
           style = AppTheme.typography.bodyMedium,
           modifier = Modifier
-            .clickable { onClickDismiss(false, "") },
+            .clickable {
+              onDismiss()
+              cardName = ""
+            },
           color = AppTheme.colors.contendAccentPrimary
         )
 
@@ -114,28 +116,19 @@ fun RenameDialog(
           color = AppTheme.colors.contendTertiary
         )
 
-
         Text(
           text = stringResource(R.string.confirm_name_button_text),
           style = AppTheme.typography.bodyMedium,
           modifier = Modifier
-            .clickable { onClickConfirm(false) },
+            .clickable {
+              onConfirm(cardName)
+              onDismiss()
+            },
           color = AppTheme.colors.contendAccentPrimary
         )
-
       }
     }
   }
 }
 
 
-//@Preview
-//@Composable
-//fun RenameDialogPreview() {
-//  RenameDialog(
-//    onClickChangeText = {},
-//    onClickConfirm = {},
-//    onClickDismiss = { } ,
-//    enteredName = "dfs"
-//  )
-//}

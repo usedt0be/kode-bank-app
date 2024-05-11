@@ -1,4 +1,4 @@
-package ru.kode.base.internship.ui.component
+package ru.kode.base.internship.ui.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -23,8 +23,7 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-
-fun CardDetailsActionRow() {
+fun CardActionRow() {
   var operationButtonIsActive by remember { mutableStateOf(false) }
   var infoButtonIsActive by remember { mutableStateOf(true) }
   var paymentsButtonIsActive by remember { mutableStateOf(false) }
@@ -137,5 +136,5 @@ fun CardDetailsActionRow() {
 @Composable
 @Preview(showBackground = true)
 fun CardActionRowPreview() {
-  CardDetailsActionRow()
+  CardActionRow()
 }

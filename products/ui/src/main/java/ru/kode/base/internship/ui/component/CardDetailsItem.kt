@@ -23,18 +23,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.kode.base.internship.domain.entity.CardEntity
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.entity.PaymentSystem
 import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
-import java.time.LocalDate
+import ru.kode.base.internship.ui.entity.CardEntityUi
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CardDetailsItem(card: CardEntity, balance: String) {
-
+fun CardDetailsItem(card: CardEntityUi) {
   Card(
     modifier = Modifier
       .size(height = 160.dp, width = 272.dp)
@@ -62,9 +63,10 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
       ) {
         Icon(
           painter = when (card.paymentSystem) {
+            PaymentSystem.VISA -> painterResource(id = R.drawable.ic_visa)
             PaymentSystem.Visa -> painterResource(id = R.drawable.ic_visa)
             PaymentSystem.MasterCard -> painterResource(id = R.drawable.ic_mastercard)
-          },
+          } ,
           contentDescription = "Payment system icon",
           tint = Color.Unspecified,
           modifier = Modifier.alignByBaseline()
@@ -85,17 +87,17 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
         )
       }
 
-      if (card.status == Status.Blocked) {
+      if (card.status == Status.ACTIVE) {
+        Text(
+          text = card.balance.format(),
+          style = AppTheme.typography.bodyMedium,
+          color = AppTheme.colors.textPrimary
+        )
+      } else {
         Text(
           text = stringResource(id = R.string.blocked),
           style = AppTheme.typography.bodyMedium,
           color = AppTheme.colors.indicatorContendError
-        )
-      } else {
-        Text(
-          text = balance,
-          style = AppTheme.typography.bodyMedium,
-          color = AppTheme.colors.textPrimary
         )
       }
 
@@ -114,7 +116,7 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-          text = parseDate(card.expireAt),
+          text = parse(card.expiredAt),
           modifier = Modifier.alignByBaseline(),
           style = AppTheme.typography.caption1,
           color = AppTheme.colors.textSecondary
@@ -124,31 +126,29 @@ fun CardDetailsItem(card: CardEntity, balance: String) {
   }
 }
 
-fun parseDate(input: String): String {
-  val date = LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-  val formatter = DateTimeFormatter.ofPattern("MM/dd")
-  return date.format(formatter)
+fun parse(dateString: String): String {
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+  val parsedDateTime = LocalDateTime.parse(dateString, formatter)
+  return parsedDateTime.format(DateTimeFormatter.ofPattern("MM/yy"))
 }
 
 fun maskCardNumber(input: String): String {
   return "**** ${input.substring(input.length - 4)}"
 }
 
-
-
 @Preview
 @Composable
 fun CardItemPreview() {
   CardDetailsItem(
-    balance = "102",
-    card = CardEntity(
-      cardId = CardEntity.Id("41"),
+    card = CardEntityUi(
+      balance = Balance("23", Currency.RUB),
+      cardId = "41",
       name = "Тинькофф платинум)))",
       type = "Физическая",
       paymentSystem = PaymentSystem.Visa,
       number = "5413 4124 4123 4124",
-      status = Status.Active,
-      expireAt = "02.04.2025",
+      status = Status.ACTIVE,
+      expiredAt = "02.04.2025",
       accountId = "15135"
     ),
   )

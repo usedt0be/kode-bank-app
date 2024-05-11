@@ -1,0 +1,28 @@
+CREATE TABLE DepositModel(
+     id  INTEGER NOT NULL PRIMARY KEY ,
+     name TEXT NOT NULL,
+     rate TEXT NOT NULL,
+     status TEXT NOT NULL,
+     balance TEXT NOT NULL,
+     currency TEXT NOT NULL,
+     closeDate TEXT NOT NULL
+);
+
+
+
+
+getAllDeposits:
+SELECT * FROM DepositModel;
+
+
+getDepositById:
+SELECT * FROM DepositModel WHERE id  = :id;
+
+
+insertDeposit:
+INSERT OR REPLACE INTO DepositModel VALUES (?, ?, ?, ?, ?, ?, ?);
+
+
+insertDepositObject:
+INSERT OR REPLACE INTO DepositModel VALUES ?;
+

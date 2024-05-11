@@ -4,13 +4,9 @@ import ru.kode.base.core.BaseViewIntents
 
 class CardDetailsIntents: BaseViewIntents() {
   val navigateOnBack = intent("navigateOnBack")
-
-  val renameCard = intent<String>("renameCard")
-
-  val confirmRename = intent("confirmRename")
-
-  val openOrCloseDialog = intent<Boolean>("openDialog")
-
-  val getCardById = intent<String>("cardId")
+  val confirm = intent<String>("confirmRename")
+  val openDialog = intent("openDialog")
+  val dismissDialog = intent("dismissDialog")
+  val openCardDetails = intent<String>("cardId")
 
 }

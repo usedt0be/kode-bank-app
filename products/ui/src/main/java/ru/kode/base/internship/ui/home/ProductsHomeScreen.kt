@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -51,6 +50,8 @@ fun ProductsHomeScreen(
   viewModel = viewModel,
   intents = rememberViewIntents()
 ) { state, intents ->
+
+
   val bankAccounts = state.bankAccountsData
   val deposits = state.depositsData
 
@@ -180,8 +181,6 @@ fun ProductsHomeScreen(
         item {
           Spacer(modifier = Modifier.height(16.dp))
         }
-
-        Log.d("bank_BTN_state_2", "$createButtonIsVisible")
 
         if (createButtonIsVisible) {
           item {

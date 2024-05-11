@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.details
 
+import android.util.Log
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.dimsuz.unicorn2.Machine
@@ -18,30 +19,13 @@ class CardDetailsViewModel @Inject constructor(
   override fun buildMachine(): Machine<CardDetailsViewState> = machine {
     initial = CardDetailsViewState() to null
 
-    onEach(intent(CardDetailsIntents::getCardById)) {
+    onEach(intent(CardDetailsIntents::openCardDetails)) {
       action { _, _, cardId ->
         executeAsync {
             productsUseCase.fetchCardDetails(cardId)
         }
       }
     }
-
-    onEach(productsUseCase.bankAccountBalanceState) {
-      transitionTo { state, bankAccountBalanceState ->
-        state.copy(
-          bankAccountBalanceState = bankAccountBalanceState
-        )
-      }
-    }
-
-    onEach(productsUseCase.bankAccountBalance) {
-      transitionTo { state, bankAccountBalance ->
-        state.copy(
-          bankAccountBalance = bankAccountBalance
-        )
-      }
-    }
-
 
     onEach(productsUseCase.cardState) {
       transitionTo { state, cardState ->
@@ -60,29 +44,44 @@ class CardDetailsViewModel @Inject constructor(
       }
     }
 
-    onEach(intent(CardDetailsIntents::renameCard)) {
-      transitionTo { state, newName ->
+    onEach(productsUseCase.accountBalance) {
+      transitionTo { state, balance->
         state.copy(
-          enteredName = newName
+          balance = balance
         )
       }
     }
 
-    onEach(intent(CardDetailsIntents::confirmRename)) {
-      action { _, newState, _ ->
+    onEach(intent(CardDetailsIntents::openDialog)) {
+      transitionTo { state, _ ->
+        state.copy(
+          showDialog = !state.showDialog
+        )
+      }
+    }
+
+    onEach(intent(CardDetailsIntents::dismissDialog)) {
+      transitionTo { state, _ ->
+        state.copy(
+          showDialog = !state.showDialog
+        )
+      }
+    }
+
+    onEach(intent(CardDetailsIntents::confirm)) {
+      transitionTo { state, _ ->
+        state.copy(
+          showDialog = !state.showDialog
+        )
+      }
+      action { state, newState, newName ->
         executeAsync {
-          productsUseCase.renameCard(newState.card.cardId, newState.enteredName)
+          productsUseCase.renameCard(newState.card.cardId, newName)
         }
       }
     }
 
-    onEach(intent(CardDetailsIntents::openOrCloseDialog)) {
-      transitionTo { state, openDialog ->
-        state.copy(
-          dialogOpened = openDialog
-        )
-      }
-    }
+
 
     onEach(intent(CardDetailsIntents::navigateOnBack)) {
       action { _, _, _ -> flowEvents.tryEmit(FlowEvent.BackToHomeScreen)  }

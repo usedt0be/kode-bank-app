@@ -1,16 +1,19 @@
 package ru.kode.base.internship.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import ru.kode.base.internship.domain.Balance
+import ru.kode.base.internship.domain.entity.CardDetailsEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 
 interface CardRepository {
-  val card: Flow<CardEntity>
-  suspend fun fetchCardDetails(id: String)
+  val cardFlow: Flow<CardDetailsEntity>
+  suspend fun fetchCardDetails()
 
-  fun fetchBankAccountBalance()
+  suspend fun getCardDetails(id:String)
+  suspend fun fetchBankAccountBalance()
 
-  val bankAccountBalance: Flow<String>
+  suspend fun renameCard(id: CardDetailsEntity.Id, newName:String)
 
-  fun renameCard(cardId: CardEntity.Id,newName:String)
+  val balance: Flow<Balance>
 
 }

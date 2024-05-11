@@ -1,24 +1,78 @@
 package ru.kode.base.internship.data.repository
 
+import android.util.Log
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
-import ru.kode.base.internship.data.Mocks
+import ru.kode.base.internship.data.mapper.toBankAccountEntity
+import ru.kode.base.internship.data.mapper.toBankAccountModel
+import ru.kode.base.internship.data.mapper.toCardEntity
+import ru.kode.base.internship.data.mapper.toCardModel
+import ru.kode.base.internship.data.network.ProductApi
 import ru.kode.base.internship.domain.entity.BankAccountEntity
+import ru.kode.base.internship.domain.entity.Currency
+import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.domain.repository.BankAccountRepository
+import ru.kode.base.internship.products.data.ProductsDB
 import javax.inject.Inject
 
 @ContributesBinding(AppScope::class)
-class BankAccountsRepositoryImpl @Inject constructor() : BankAccountRepository {
-  override fun fetchBankAccount() {
-    bankAccounts.update {Mocks.getBankAccountsMocks()}
+class BankAccountsRepositoryImpl @Inject constructor(
+  private val db: ProductsDB,
+  private val api: ProductApi,
+) : BankAccountRepository {
+
+  private val bankAccountQueries = db.bankAccountModelQueries
+  private val cardQueries = db.cardModelQueries
+  override suspend fun fetchBankAccount() {
+    val bankAccountsResponse = api.getBankAccounts()
+    val bankAccountEntityList = bankAccountsResponse.accounts.map { it.toBankAccountEntity() }
+
+    val bankAccountsSM = bankAccountEntityList.map { it.toBankAccountModel() }
+    bankAccountQueries.transaction {
+      bankAccountsSM.forEach { bankAccount ->
+        bankAccountQueries.insertBankAccountObject(bankAccount)
+      }
+    }
+
+    cardQueries.transaction {
+      bankAccountEntityList.forEach { bankAccountEntity ->
+        bankAccountEntity.cards.forEach { cardEntity ->
+          cardQueries.insertCardModelObject(cardEntity.toCardModel())
+        }
+      }
+    }
   }
 
-  private var bankAccounts = MutableStateFlow<List<BankAccountEntity>>(emptyList())
+  override fun getBankAccounts(): Flow<List<BankAccountEntity>> {
+    val bankAccountsFlow = bankAccountQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO).map { bankAccounts ->
+        bankAccounts.map { bankAccountModel ->
+          bankAccountModel.toBankAccountEntity()
+        }
+      }.distinctUntilChanged()
 
-  override val bankAccountFlow: Flow<List<BankAccountEntity>>
-    get() = bankAccounts
+    val cardsFlow = cardQueries.getAllCards().asFlow().mapToList(Dispatchers.IO).map { cardModels ->
+      cardModels.map { cardModel ->
+        cardModel.toCardEntity()
+      }
+    }.distinctUntilChanged()
 
+    val combinedFlow = bankAccountsFlow.combine(cardsFlow) {bankAccountEntities, cardEntities ->
+      bankAccountEntities.map {bankAccountEntity ->
+        bankAccountEntity.copy(
+          cards = cardEntities.filter { bankAccountEntity.accountId == it.accountId }
+        )
+      }
+    }
+    return combinedFlow
+  }
 }
+
+

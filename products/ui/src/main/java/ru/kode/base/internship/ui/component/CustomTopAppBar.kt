@@ -17,7 +17,7 @@ import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-fun CustomTopAppBar(onClickNavigateOnBack:() -> Unit) {
+fun CustomTopAppBar(onNavigateBackClick:() -> Unit) {
   Box(
     modifier = Modifier
       .fillMaxWidth()
@@ -25,7 +25,7 @@ fun CustomTopAppBar(onClickNavigateOnBack:() -> Unit) {
       .heightIn(32.dp)
   ) {
     IconButton(
-      onClick = { onClickNavigateOnBack() },
+      onClick = { onNavigateBackClick() },
       modifier = Modifier
         .align(Alignment.CenterStart)
     ) {
@@ -35,7 +35,7 @@ fun CustomTopAppBar(onClickNavigateOnBack:() -> Unit) {
       )
     }
     Text(
-      text = "Карты",
+      text = stringResource(R.string.cards_description),
       modifier = Modifier.align(Alignment.Center),
       style = AppTheme.typography.bodySemibold,
       color = AppTheme.colors.textPrimary

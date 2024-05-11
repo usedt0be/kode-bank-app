@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class BankAccountEntity(
-  val description: String,
   val accountId: String,
   val cards: List<CardEntity>,
   val status: Status,

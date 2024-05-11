@@ -7,11 +7,12 @@ enum class Currency {
 }
 
 enum class Status {
-  Active,
-  Blocked
+  ACTIVE,
+  DEACTIVATED
 }
 
 enum class PaymentSystem {
   MasterCard,
-  Visa
+  Visa,
+  VISA
 }

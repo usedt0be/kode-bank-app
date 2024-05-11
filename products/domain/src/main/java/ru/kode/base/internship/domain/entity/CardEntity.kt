@@ -2,13 +2,13 @@ package ru.kode.base.internship.domain.entity
 
 import androidx.compose.runtime.Immutable
 
+
 @Immutable
 data class CardEntity(
-  val cardId: Id,
   val accountId: String,
-  var name: String,
+  val cardId: Id,
+  val name: String,
   val number: String,
-  val expireAt: String,
   val paymentSystem: PaymentSystem,
   val status: Status,
   val type: String,
