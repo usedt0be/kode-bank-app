@@ -1,15 +1,12 @@
 package ru.kode.base.internship.ui.home
 
-import android.util.Log
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ru.dimsuz.unicorn2.Machine
 import ru.dimsuz.unicorn2.machine
 import ru.kode.base.core.BaseViewModel
-import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.usecase.ProductsUseCase
 import ru.kode.base.internship.routing.FlowEvent
 import javax.inject.Inject

@@ -6,6 +6,7 @@ import com.squareup.anvil.annotations.ContributesBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.internship.data.Mocks
 import ru.kode.base.internship.data.mapper.cardEntityMapper
@@ -26,11 +27,26 @@ class CardsRepositoryImpl @Inject constructor(
   private val api: ProductApi,
 ) : CardRepository {
 
-  override val cardFlow = MutableStateFlow(Mocks.defaultCardEntity)
+  private var _cardFlow = MutableStateFlow(Mocks.defaultCardEntity)
+
+  override val cardFlow: Flow<CardDetailsEntity>
+    get() = _cardFlow
+
 
   private val cardQueries = db.cardModelQueries
   private val bankQueries = db.bankAccountModelQueries
   private val cardDetailsQueries = db.cardDetailsModelQueries
+
+
+
+  private var _relatedCardsIdsList = MutableStateFlow<List<String>>(emptyList())
+  override val relatedCardsIdsList: Flow<List<String>>
+    get() = _relatedCardsIdsList
+
+
+  private var _balance = MutableStateFlow(Balance("41",Currency.RUB))
+  override val balance: Flow<Balance>
+    get() = _balance
 
 
   override suspend fun fetchCardDetails() {
@@ -54,10 +70,10 @@ class CardsRepositoryImpl @Inject constructor(
   }
 
   override suspend fun getCardDetails(id: String) {
-    val cardDetails = cardDetailsQueries.getCardById(id.toLong()).executeAsOne()
-    val card = cardQueries.getCardsById(id.toLong()).executeAsOne()
-    val cardDetailsEntity = cardModelToEntityMapper(card, cardDetails)
-    cardFlow.value = cardDetailsEntity
+    val cardDetailsFlow = cardDetailsQueries.getCardById(id.toLong()).executeAsOne()
+    val cardFlow = cardQueries.getCardsById(id.toLong()).executeAsOne()
+    val cardDetailsEntity = cardModelToEntityMapper(cardFlow, cardDetailsFlow)
+     _cardFlow.value = cardDetailsEntity
   }
 
   override suspend fun renameCard(id: CardDetailsEntity.Id, newName: String) {
@@ -75,26 +91,44 @@ class CardsRepositoryImpl @Inject constructor(
       cardQueries.insertCardModelObject(renamedCard)
     }
     val cardDetailsEntity = cardModelToEntityMapper(renamedCard, renamedCardDetails)
-    cardFlow.value = cardDetailsEntity
+    _cardFlow.value = cardDetailsEntity
   }
 
-  val _balance = MutableStateFlow(Balance("41",Currency.RUB))
-  override val balance: Flow<Balance>
-    get() = _balance
+
+
+  override suspend fun findRelatedCardsIds(id: String) {
+    val accountIdOfRelatedCard = cardQueries.getCardsById(id.toLong()).executeAsOne().accountId
+
+    val cardsModelList = cardQueries.getAllCards().executeAsList()
+
+    val relatedCardIdsList = mutableListOf<String>()
+
+    cardsModelList.filter {
+      it.accountId == accountIdOfRelatedCard
+    }.forEach { cardModel ->
+      relatedCardIdsList.add(cardModel.id.toString())
+    }
+
+    _relatedCardsIdsList.emit(relatedCardIdsList)
+  }
+
+
 
   override suspend fun fetchBankAccountBalance() {
     val bankAccountModelsList = bankQueries.getAllBankAccounts().asFlow().mapToList(Dispatchers.IO)
     bankAccountModelsList.collect { bankAccountModelList ->
        val balance = bankAccountModelList.find { bankAccountModel ->
-         bankAccountModel.id.toString() == cardFlow.value.accountId
+         bankAccountModel.id.toString() == _cardFlow.value.accountId
       }?.balance
       val currency = bankAccountModelList.find { bankAccountModel ->
-        bankAccountModel.id.toString() == cardFlow.value.accountId
+        bankAccountModel.id.toString() == _cardFlow.value.accountId
       }?.currency
 
       if (balance != null && currency !=null) {
+        _balance.update { Balance(balance, Currency.valueOf(currency)) }
         _balance.value = Balance(balance, Currency.valueOf(currency))
       }
     }
   }
+
 }

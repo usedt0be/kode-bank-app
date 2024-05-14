@@ -1,6 +1,5 @@
 package ru.kode.base.internship.ui.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.kode.base.internship.domain.Balance
 import ru.kode.base.internship.domain.entity.BankAccountEntity
-import ru.kode.base.internship.domain.entity.CardDetailsEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.entity.Currency
 import ru.kode.base.internship.domain.entity.PaymentSystem
@@ -85,8 +83,7 @@ fun BankAccountItem(
         onClick = {
           cardListExpanded = !cardListExpanded
           onClickExpand(cardListExpanded)
-        },
-        modifier = Modifier.padding(end = 16.dp),
+        }
       ) {
         Icon(
           if (cardListExpanded)
@@ -94,7 +91,8 @@ fun BankAccountItem(
           else
             painterResource(id = R.drawable.expand_button_unexpanded),
           contentDescription = stringResource(id = R.string.expand_icon_description),
-          tint = Color.Unspecified
+          tint = Color.Unspecified,
+          modifier = Modifier.padding(end = 16.dp)
         )
       }
     }
@@ -113,39 +111,39 @@ fun BankAccountItem(
 }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun BankAccountItemPreview() {
-//     BankAccountItem(
-//      bankAccount = BankAccountEntity(
-//        status = Status.ACTIVE,
-//        number = "4141",
-//        accountBalance = "457334.00",
-//        currency = Currency.RUB,
-//        accountId = "421",
-//        cards = listOf(
-//          CardEntity(
-//            accountId = "21",
-//            cardId = 51,
-//            name = "Карта зарплатная",
-//            type = "Физическая",
-//            number = "4124 4144 5135 5131",
-//            paymentSystem = PaymentSystem.MasterCard,
-//            status = Status.ACTIVE,
-//
-//          ),
-//          CardEntity(
-//            accountId = "24",
-//            cardId = 58,
-//            name = "Карта зарплатная",
-//            type = "Физическая",
-//            number = "4124 4144 5135 5511",
-//            paymentSystem = PaymentSystem.Visa,
-//            status = Status.ACTIVE,
-//          )
-//        ),
-//      ),
-//    onClickExpand = {} ,
-//   onClickGetDetails = {}
-//     )
-//}
+@Preview(showBackground = true)
+@Composable
+fun BankAccountItemPreview() {
+     BankAccountItem(
+      bankAccount = BankAccountEntity(
+        status = Status.ACTIVE,
+        number = "4141",
+        accountBalance = "457334.00",
+        currency = Currency.RUB,
+        accountId = "421",
+        cards = listOf(
+          CardEntity(
+            accountId = "21",
+            cardId = CardEntity.Id("51"),
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5131",
+            paymentSystem = PaymentSystem.MasterCard,
+            status = Status.ACTIVE,
+
+          ),
+          CardEntity(
+            accountId = "24",
+            cardId = CardEntity.Id("56"),
+            name = "Карта зарплатная",
+            type = "Физическая",
+            number = "4124 4144 5135 5511",
+            paymentSystem = PaymentSystem.Visa,
+            status = Status.ACTIVE,
+          )
+        ),
+      ),
+    onClickExpand = {} ,
+   onClickGetDetails = {}
+     )
+}

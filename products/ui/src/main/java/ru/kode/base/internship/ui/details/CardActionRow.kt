@@ -1,5 +1,6 @@
 package ru.kode.base.internship.ui.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,7 @@ fun CardActionRow() {
     horizontalArrangement = Arrangement.SpaceBetween,
     modifier = Modifier
       .fillMaxWidth()
+      .background(color = AppTheme.colors.backgroundSecondary)
       .padding(start = 36.dp, end = 36.dp)
   ) {
     Button(

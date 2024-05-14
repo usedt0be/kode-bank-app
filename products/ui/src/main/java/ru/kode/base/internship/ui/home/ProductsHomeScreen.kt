@@ -1,13 +1,14 @@
 package ru.kode.base.internship.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -70,28 +72,36 @@ fun ProductsHomeScreen(
   if (state.bankAccountsState == LceState.Loading || state.depositsState == LceState.Loading) {
     ShimmerEffect()
   } else {
-    Box(
+
+    Column(
       modifier = Modifier
         .statusBarsPadding()
         .navigationBarsPadding()
         .imePadding()
-        .pullRefresh(pullRefreshState)
     ) {
-      LazyColumn {
-        item {
-          Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.padding(start = 16.dp, top = 47.dp, end = 16.dp)
-          ) {
-            Text(
-              text = stringResource(id = R.string.main_description, ),
-              style = AppTheme.typography.title,
-            )
-          }
+      val lazyListState = rememberLazyListState()
+      Row(
+        horizontalArrangement = if(lazyListState.canScrollBackward) Arrangement.Center else Arrangement.Start,
+        verticalAlignment = if(lazyListState.canScrollBackward) Alignment.CenterVertically else Alignment.Bottom,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+          .fillMaxWidth()
+          .heightIn(if(lazyListState.canScrollBackward) 32.dp else 64.dp)
+      ) {
+        Text(
+          text = stringResource(id = R.string.main_description,),
+          style = if(lazyListState.canScrollBackward)AppTheme.typography.subtitle else AppTheme.typography.title,
+        )
+      }
+      LazyColumn(
+        state = lazyListState,
+        modifier = Modifier.pullRefresh(pullRefreshState)
+      ) {
+        item{
+
           Spacer(modifier = Modifier.height(8.dp))
         }
 
-        fun LazyListScope.bankAccountsSection() {
+       fun LazyListScope.bankAccountsSection() {
           item {
             Row(
               modifier = Modifier
@@ -101,7 +111,7 @@ fun ProductsHomeScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
-                text = stringResource(id = R.string.bankAccounts, ),
+                text = stringResource(id = R.string.bankAccounts,),
                 modifier = Modifier
                   .fillMaxWidth()
                   .padding(start = 16.dp),
@@ -116,7 +126,7 @@ fun ProductsHomeScreen(
           ) { index, bankAccount ->
             BankAccountItem(
               bankAccount = bankAccount,
-              onClickExpand = {cardListExpanded ->
+              onClickExpand = { cardListExpanded ->
                 if (cardListExpanded) {
                   intents.expandCards(bankAccount)
                 } else {
@@ -125,7 +135,7 @@ fun ProductsHomeScreen(
               },
               onClickGetDetails = intents.getCardDetails
             )
-            if (index != bankAccounts.lastIndex)  {
+            if (index != bankAccounts.lastIndex) {
               CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
             }
           }
@@ -154,7 +164,7 @@ fun ProductsHomeScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
-                text = stringResource(id = R.string.deposits, "deposits"),
+                text = stringResource(id = R.string.deposits, ),
                 modifier = Modifier.padding(start = 16.dp),
                 style = AppTheme.typography.body2,
                 color = AppTheme.colors.textTertiary
@@ -193,7 +203,7 @@ fun ProductsHomeScreen(
         refreshing = state.depositsState == LceState.Loading || state.bankAccountsState == LceState.Loading,
         state = pullRefreshState,
         modifier = Modifier
-          .align(Alignment.TopCenter),
+          .align(Alignment.CenterHorizontally),
         backgroundColor = AppTheme.colors.backgroundSecondary
       )
     }

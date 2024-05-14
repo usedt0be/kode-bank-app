@@ -107,8 +107,10 @@ fun ShimmerLoadingItem() {
 
 @Composable
 fun ShimmerEffect() {
+
   LazyColumn(modifier = Modifier.fillMaxWidth()) {
     item {
+      Spacer(modifier = Modifier.heightIn(min = 42.dp))
       Row(
         horizontalArrangement = Arrangement.Start,
         modifier = Modifier.padding(start = 16.dp, top = 47.dp, end = 16.dp)
@@ -187,19 +189,22 @@ fun ShimmerCard() {
     )
     {
       Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+          .fillMaxWidth()
           .heightIn(min = 16.dp)
           .shimmer()
       ) {}
 
       Row(
-        modifier = Modifier.fillMaxWidth(0.3f)
+        modifier = Modifier
+          .fillMaxWidth(0.3f)
           .heightIn(min = 16.dp)
           .shimmer()
       ) {}
 
       Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+          .fillMaxWidth()
           .heightIn(min = 16.dp)
           .shimmer()
       ) {}

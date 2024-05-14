@@ -1,6 +1,5 @@
 package ru.kode.base.internship.ui.details
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Divider
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -24,7 +24,6 @@ import ru.kode.base.core.viewmodel.daggerViewModel
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.cardUiMapper
-import ru.kode.base.internship.ui.component.CardDetailsItem
 import ru.kode.base.internship.ui.component.CustomTopAppBar
 import ru.kode.base.internship.ui.component.RenameDialog
 import ru.kode.base.internship.ui.core.uikit.screen.AppScreen
@@ -65,8 +64,10 @@ fun CardDetailsScreen(
       }
     )
   }
-
-  Column(
+  Scaffold (
+    topBar = {
+      CustomTopAppBar(onNavigateBack = { intents.navigateOnBack() })
+    },
     modifier = Modifier
       .fillMaxSize()
       .background(color = AppTheme.colors.backgroundSecondary)
@@ -74,48 +75,63 @@ fun CardDetailsScreen(
       .navigationBarsPadding()
       .imePadding()
   )
-  {
-    CustomTopAppBar(onNavigateBackClick = { intents.navigateOnBack() })
-
-    Box(
-      modifier = Modifier.fillMaxWidth(),
-      contentAlignment = Alignment.Center
-    ) {
-      if(state.cardState == LceState.Loading) {
-        ShimmerCard()
-      } else {
-        CardDetailsItem(card = card)
-      }
-    }
-
-    Spacer(modifier = Modifier.height(40.dp))
-
-    CardActionRow()
-
+  {paddingValues ->
 
     Column(
       modifier = Modifier
-        .fillMaxWidth()
-        .weight(1f)
-        .padding(top = 24.dp)
-        .background(AppTheme.colors.backgroundPrimary),
-      verticalArrangement = Arrangement.Top
-    ) {
-      actions.forEachIndexed { index, map ->
-        map.onEach {
-          CardActionListItem(onClickCardAction = { actionName ->
-            when(actionName) {
-               "Переименовать карту" -> intents.openDialog()
-            }
-          }, iconResId = it.key, actionName = it.value)
-        }
-        if (index < actions.lastIndex) {
-          Divider(
-            color = AppTheme.colors.contendSecondary,
-            modifier = Modifier
-              .background(AppTheme.colors.backgroundPrimary)
-              .padding(start = 40.dp, end = 16.dp)
+        .fillMaxSize()
+        .padding(paddingValues)
+        .background(color = AppTheme.colors.backgroundSecondary)
+    )
+    {
+      Box(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 16.dp)
+          .background(color = AppTheme.colors.backgroundSecondary),
+        contentAlignment = Alignment.Center,
+      ) {
+        if(state.cardDetailsState == LceState.Loading || state.cardDetailsState == LceState.None) {
+          ShimmerCard()
+        } else {
+          CardPager(
+            cardCount = state.relatedCardsIds.size,
+            cardDetails = card ,
+            pageTurned = {page ->
+              intents.getNewCardDetails(page)
+            },
           )
+        }
+      }
+
+      Spacer(modifier = Modifier.height(40.dp))
+
+      CardActionRow()
+
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .padding(top = 24.dp)
+          .background(AppTheme.colors.backgroundPrimary),
+        verticalArrangement = Arrangement.Top
+      ) {
+        actions.forEachIndexed { index, map ->
+          map.onEach {
+            CardActionListItem(onClickCardAction = { actionName ->
+              when(actionName) {
+                "Переименовать карту" -> intents.openDialog()
+              }
+            }, iconResId = it.key, actionName = it.value)
+          }
+          if (index < actions.lastIndex) {
+            Divider(
+              color = AppTheme.colors.contendSecondary,
+              modifier = Modifier
+                .background(AppTheme.colors.backgroundPrimary)
+                .padding(start = 40.dp, end = 16.dp)
+            )
+          }
         }
       }
     }
