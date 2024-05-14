@@ -6,9 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -73,137 +74,139 @@ fun ProductsHomeScreen(
     ShimmerEffect()
   } else {
 
-    Column(
+    Box(
       modifier = Modifier
         .statusBarsPadding()
         .navigationBarsPadding()
         .imePadding()
+        .pullRefresh(pullRefreshState)
     ) {
       val lazyListState = rememberLazyListState()
-      Row(
-        horizontalArrangement = if(lazyListState.canScrollBackward) Arrangement.Center else Arrangement.Start,
-        verticalAlignment = if(lazyListState.canScrollBackward) Alignment.CenterVertically else Alignment.Bottom,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-          .fillMaxWidth()
-          .heightIn(if(lazyListState.canScrollBackward) 32.dp else 64.dp)
-      ) {
-        Text(
-          text = stringResource(id = R.string.main_description,),
-          style = if(lazyListState.canScrollBackward)AppTheme.typography.subtitle else AppTheme.typography.title,
-        )
-      }
-      LazyColumn(
-        state = lazyListState,
-        modifier = Modifier.pullRefresh(pullRefreshState)
-      ) {
-        item{
 
-          Spacer(modifier = Modifier.height(8.dp))
+      Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+          horizontalArrangement = if (lazyListState.canScrollBackward) Arrangement.Center else Arrangement.Start,
+          verticalAlignment = if (lazyListState.canScrollBackward) Alignment.CenterVertically else Alignment.Bottom,
+          modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight((if (lazyListState.canScrollBackward) 0.05f else 0.10f))
+        ) {
+          Text(
+            text = stringResource(id = R.string.main_description,),
+            style = if (lazyListState.canScrollBackward) AppTheme.typography.subtitle else AppTheme.typography.title,
+          )
         }
-
-       fun LazyListScope.bankAccountsSection() {
+        LazyColumn(
+          state = lazyListState,
+        ) {
           item {
-            Row(
-              modifier = Modifier
-                .height(52.dp)
-                .fillMaxWidth()
-                .background(color = AppTheme.colors.backgroundSecondary),
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              Text(
-                text = stringResource(id = R.string.bankAccounts,),
+            Spacer(modifier = Modifier.height(8.dp))
+          }
+
+          fun LazyListScope.bankAccountsSection() {
+            item {
+              Row(
                 modifier = Modifier
+                  .height(52.dp)
                   .fillMaxWidth()
-                  .padding(start = 16.dp),
-                style = AppTheme.typography.body2,
-                color = AppTheme.colors.textTertiary
+                  .background(color = AppTheme.colors.backgroundSecondary),
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                Text(
+                  text = stringResource(id = R.string.bankAccounts,),
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp),
+                  style = AppTheme.typography.body2,
+                  color = AppTheme.colors.textTertiary
+                )
+              }
+            }
+
+            itemsIndexed(
+              items = bankAccounts
+            ) { index, bankAccount ->
+              BankAccountItem(
+                bankAccount = bankAccount,
+                onClickExpand = { cardListExpanded ->
+                  if (cardListExpanded) {
+                    intents.expandCards(bankAccount)
+                  } else {
+                    intents.hideCards(bankAccount)
+                  }
+                },
+                onClickGetDetails = intents.getCardDetails
               )
+              if (index != bankAccounts.lastIndex) {
+                CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+              }
             }
           }
 
-          itemsIndexed(
-            items = bankAccounts
-          ) { index, bankAccount ->
-            BankAccountItem(
-              bankAccount = bankAccount,
-              onClickExpand = { cardListExpanded ->
-                if (cardListExpanded) {
-                  intents.expandCards(bankAccount)
-                } else {
-                  intents.hideCards(bankAccount)
-                }
-              },
-              onClickGetDetails = intents.getCardDetails
-            )
-            if (index != bankAccounts.lastIndex) {
-              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+          if (state.bankAccountsState == LceState.Error("Failed to load accounts")) {
+            createButtonIsVisible = false
+            item {
+              LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
+            }
+          } else {
+            bankAccountsSection()
+          }
+
+          item {
+            Spacer(modifier = Modifier.height(16.dp))
+          }
+
+          fun LazyListScope.depositSection() {
+            item {
+              Row(
+                modifier = Modifier
+                  .height(52.dp)
+                  .fillMaxWidth()
+                  .background(color = AppTheme.colors.backgroundSecondary),
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                Text(
+                  text = stringResource(id = R.string.deposits,),
+                  modifier = Modifier.padding(start = 16.dp),
+                  style = AppTheme.typography.body2,
+                  color = AppTheme.colors.textTertiary
+                )
+              }
+            }
+            itemsIndexed(items = deposits) { index: Int, deposit ->
+              DepositItem(deposit = deposit, onClickCheckDeposit = { intents.checkDeposit() })
+              if (index != deposits.lastIndex) {
+                CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+              }
             }
           }
-        }
 
-        if (state.bankAccountsState == LceState.Error("Failed to load accounts")) {
-          createButtonIsVisible = false
-          item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
-          }
-        } else {
-          bankAccountsSection()
-        }
-
-        item {
-          Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        fun LazyListScope.depositSection() {
-          item {
-            Row(
-              modifier = Modifier
-                .height(52.dp)
-                .fillMaxWidth()
-                .background(color = AppTheme.colors.backgroundSecondary),
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              Text(
-                text = stringResource(id = R.string.deposits, ),
-                modifier = Modifier.padding(start = 16.dp),
-                style = AppTheme.typography.body2,
-                color = AppTheme.colors.textTertiary
-              )
+          if (state.depositsState == LceState.Error("Failed to load deposits")) {
+            createButtonIsVisible = false
+            item {
+              LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
             }
+          } else {
+            depositSection()
           }
-          itemsIndexed(items = deposits) { index: Int, deposit ->
-            DepositItem(deposit = deposit, onClickCheckDeposit = { intents.checkDeposit() })
-            if (index != deposits.lastIndex) {
-              CustomDivider(paddingStart = 72.dp, paddingEnd = 16.dp)
+
+          item {
+            Spacer(modifier = Modifier.height(16.dp))
+          }
+
+          if (createButtonIsVisible) {
+            item {
+              CreateNewProductButton(onClickCreateProduct = { intents.createNewProduct() })
             }
-          }
-        }
-
-        if (state.depositsState == LceState.Error("Failed to load deposits")) {
-          createButtonIsVisible = false
-          item {
-            LoadingErrorMessage(onClickRefreshFailed = { intents.refresh() })
-          }
-        } else {
-          depositSection()
-        }
-
-        item {
-          Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        if (createButtonIsVisible) {
-          item {
-            CreateNewProductButton(onClickCreateProduct = { intents.createNewProduct() })
           }
         }
       }
-
       PullRefreshIndicator(
         refreshing = state.depositsState == LceState.Loading || state.bankAccountsState == LceState.Loading,
         state = pullRefreshState,
         modifier = Modifier
-          .align(Alignment.CenterHorizontally),
+          .align(Alignment.TopCenter),
         backgroundColor = AppTheme.colors.backgroundSecondary
       )
     }

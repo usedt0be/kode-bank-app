@@ -113,7 +113,8 @@ fun ShimmerEffect() {
       Spacer(modifier = Modifier.heightIn(min = 42.dp))
       Row(
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.padding(start = 16.dp, top = 47.dp, end = 16.dp)
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier.padding(start = 16.dp, top = 46.dp, end = 16.dp)
       ) {
         Box(
           modifier = Modifier
