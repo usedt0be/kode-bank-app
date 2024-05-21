@@ -40,8 +40,6 @@ fun RenameDialog(
   )
 {
   var cardName by rememberSaveable { mutableStateOf("") }
-  Log.d("Card_name", "$cardName")
-
 
   Dialog(onDismissRequest = {  }) {
     Column(

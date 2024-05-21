@@ -8,5 +8,5 @@ class CardDetailsIntents: BaseViewIntents() {
   val openDialog = intent("openDialog")
   val dismissDialog = intent("dismissDialog")
   val openCardDetails = intent<String>("cardId")
-
+  val getNewCardDetails = intent<Int>("getNewCardDetails")
 }

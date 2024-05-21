@@ -1,6 +1,5 @@
 package ru.kode.base.internship.ui.details
 
-import android.util.Log
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.dimsuz.unicorn2.Machine
@@ -22,15 +21,24 @@ class CardDetailsViewModel @Inject constructor(
     onEach(intent(CardDetailsIntents::openCardDetails)) {
       action { _, _, cardId ->
         executeAsync {
-            productsUseCase.fetchCardDetails(cardId)
+          productsUseCase.fetchCardDetails()
+          productsUseCase.getCardDetails(cardId)
+        }
+      }
+    }
+    onEach(intent(CardDetailsIntents::getNewCardDetails)) {
+      action { state, _, page ->
+        val cardId = state.relatedCardsIds[page]
+        executeAsync {
+          productsUseCase.getCardDetails(cardId)
         }
       }
     }
 
     onEach(productsUseCase.cardState) {
-      transitionTo { state, cardState ->
+      transitionTo { state, cardDetailsState ->
         state.copy(
-          cardState = cardState
+          cardDetailsState = cardDetailsState
         )
       }
     }
@@ -40,6 +48,14 @@ class CardDetailsViewModel @Inject constructor(
       transitionTo { state, card ->
         state.copy(
           card = card
+        )
+      }
+    }
+
+    onEach(productsUseCase.relatedCardsIdsList) {
+      transitionTo { state, idsList ->
+        state.copy(
+          relatedCardsIds = idsList
         )
       }
     }
@@ -74,12 +90,14 @@ class CardDetailsViewModel @Inject constructor(
           showDialog = !state.showDialog
         )
       }
-      action { state, newState, newName ->
+      action { _, newState, newName ->
         executeAsync {
           productsUseCase.renameCard(newState.card.cardId, newName)
         }
       }
     }
+
+
 
 
 

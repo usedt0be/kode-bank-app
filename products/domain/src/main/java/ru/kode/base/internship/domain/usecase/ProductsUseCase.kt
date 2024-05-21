@@ -1,10 +1,11 @@
 package ru.kode.base.internship.domain.usecase
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.core.di.SingleIn
@@ -26,6 +27,8 @@ class ProductsUseCase @Inject constructor(
     val bankAccountsState: LceState = LceState.None,
     val depositsState: LceState = LceState.None,
     val cardsState: LceState = LceState.None,
+
+    val cardDetailsState: LceState = LceState.None
   )
 
   suspend fun fetchBankAccounts()  {
@@ -65,26 +68,43 @@ class ProductsUseCase @Inject constructor(
 
   val depositsState: Flow<LceState> = stateFlow.map { it.depositsState }.distinctUntilChanged()
 
-  suspend fun fetchCardDetails(cardId: String) {
-    setState { copy(cardsState = LceState.Loading) }
-    try {
-      cardRepository.fetchCardDetails()
-      setState { copy(cardsState = LceState.Content) }
-      cardRepository.getCardDetails(cardId)
-      cardRepository.fetchBankAccountBalance()
-
-    }catch (e:Exception) {
-      setState { copy(cardsState = LceState.Error("Failed to load Cards")) }
-    }
-  }
   suspend fun renameCard(id:CardDetailsEntity.Id, newName:String) {
     cardRepository.renameCard(id, newName)
   }
 
+  suspend fun fetchCardDetails() {
+    setState { copy(cardsState = LceState.Loading) }
+    try {
+      cardRepository.fetchCardDetails()
+      setState { copy(cardsState = LceState.Content) }
+    }catch (e:Exception) {
+      setState { copy(cardsState = LceState.Error("Failed to load Cards")) }
+    }
+  }
+
+  suspend fun getCardDetails(cardId:String) {
+    setState { copy(cardDetailsState = LceState.Loading) }
+    try {
+      CoroutineScope(Dispatchers.IO).launch {
+        cardRepository.findRelatedCardsIds(cardId)
+      }
+      CoroutineScope(Dispatchers.IO).launch {
+        cardRepository.getCardDetails(cardId)
+        cardRepository.fetchBankAccountBalance()
+      }
+      setState { copy(cardDetailsState = LceState.Content) }
+    }catch (e:Exception) {
+      setState { copy(cardDetailsState = LceState.Error("Failed to get card details")) }
+    }
+  }
+
+
   val card = cardRepository.cardFlow.distinctUntilChanged()
 
-  val cardState: Flow<LceState> = stateFlow.map { it.cardsState }.distinctUntilChanged()
+  val cardState: Flow<LceState> = stateFlow.map { it.cardDetailsState }.distinctUntilChanged()
 
   val accountBalance = cardRepository.balance
+
+  val relatedCardsIdsList = cardRepository.relatedCardsIdsList
 
 }

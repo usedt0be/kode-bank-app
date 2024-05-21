@@ -35,9 +35,11 @@ fun CardActionListItem(
   )
   {
     Icon(
-      painter = painterResource(id = iconResId) ,
+      painter = painterResource(id = iconResId),
       contentDescription = "",
-      modifier = Modifier.alignByBaseline()
+      modifier = Modifier.alignByBaseline(),
+      tint = AppTheme.colors.contendTertiary
+
     )
     
     Text(

@@ -1,6 +1,5 @@
 package ru.kode.base.internship.data.repository
 
-import android.util.Log
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.squareup.anvil.annotations.ContributesBinding
@@ -8,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
 import ru.kode.base.core.di.AppScope
 import ru.kode.base.internship.data.mapper.toBankAccountEntity
@@ -17,8 +15,6 @@ import ru.kode.base.internship.data.mapper.toCardEntity
 import ru.kode.base.internship.data.mapper.toCardModel
 import ru.kode.base.internship.data.network.ProductApi
 import ru.kode.base.internship.domain.entity.BankAccountEntity
-import ru.kode.base.internship.domain.entity.Currency
-import ru.kode.base.internship.domain.entity.Status
 import ru.kode.base.internship.domain.repository.BankAccountRepository
 import ru.kode.base.internship.products.data.ProductsDB
 import javax.inject.Inject

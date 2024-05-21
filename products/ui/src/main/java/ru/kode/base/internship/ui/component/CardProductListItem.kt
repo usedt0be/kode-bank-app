@@ -18,9 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.kode.base.internship.domain.entity.CardDetailsEntity
 import ru.kode.base.internship.domain.entity.CardEntity
 import ru.kode.base.internship.domain.entity.PaymentSystem
 import ru.kode.base.internship.domain.entity.Status

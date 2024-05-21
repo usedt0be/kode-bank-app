@@ -9,9 +9,11 @@ import ru.kode.base.internship.domain.entity.Currency
 
 @Immutable
 data class CardDetailsViewState(
-  val cardState: LceState = LceState.None,
+  val cardDetailsState: LceState = LceState.None,
   val card: CardDetailsEntity = Mocks.defaultCardEntity,
   val enteredName: String = "",
   val balance: Balance = Balance(balance = "33", Currency.RUB),
   val showDialog: Boolean = false,
+  val relatedCardsIds: List<String> = emptyList(),
+  val switchedCards: List<Int> = emptyList()
 )

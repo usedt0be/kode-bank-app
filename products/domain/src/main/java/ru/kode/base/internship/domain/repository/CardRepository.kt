@@ -3,7 +3,6 @@ package ru.kode.base.internship.domain.repository
 import kotlinx.coroutines.flow.Flow
 import ru.kode.base.internship.domain.Balance
 import ru.kode.base.internship.domain.entity.CardDetailsEntity
-import ru.kode.base.internship.domain.entity.CardEntity
 
 interface CardRepository {
   val cardFlow: Flow<CardDetailsEntity>
@@ -16,4 +15,7 @@ interface CardRepository {
 
   val balance: Flow<Balance>
 
+  suspend fun findRelatedCardsIds(id:String)
+
+  val relatedCardsIdsList: Flow<List<String>>
 }

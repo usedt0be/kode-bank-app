@@ -1,4 +1,4 @@
-package ru.kode.base.internship.ui.component
+package ru.kode.base.internship.ui.details
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -76,6 +76,7 @@ fun CardDetailsItem(card: CardEntityUi) {
           text = card.name,
           style = AppTheme.typography.body2,
           modifier = Modifier.padding(start = 16.dp),
+          color = AppTheme.colors.textPrimary
         )
 
         Spacer(modifier = Modifier.weight(1f))
